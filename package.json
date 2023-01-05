@@ -37,6 +37,7 @@
     "@angular-devkit/build-angular": "^15.0.4",
     "@angular/cli": "~15.0.4",
     "@angular/compiler-cli": "^15.0.4",
+    "@microsoft/microsoft-graph-types": "^2.25.0",
     "@types/jasmine": "~4.0.0",
     "@types/three": "~0.142.0",
     "jasmine-core": "~4.2.0",

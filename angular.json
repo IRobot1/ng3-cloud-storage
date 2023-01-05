@@ -25,7 +25,10 @@
             "styles": [
               "src/styles.css"
             ],
-            "scripts": []
+            "scripts": [],
+            "allowedCommonJsDependencies": [
+              "@microsoft/microsoft-graph-client/authProviders/authCodeMsalBrowser",
+            ]
           },
           "configurations": {
             "production": {

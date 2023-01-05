@@ -1,0 +1,12 @@
+<h1>OneDrive - Microsoft Graph</h1>
+<ng-container *ngIf="authenticated; then welcomeUser else signInPrompt"></ng-container>
+<ng-template #welcomeUser>
+  <h4>
+    Welcome {{ user != null ? user.displayName : '' }}! <button mat-button role="button" (click)="signOut()">Sign Out</button>
+  </h4>
+  <p>You can now access folders and files.  Continue to <button mat-button><mat-icon svgIcon="threejs"></mat-icon> Scene</button></p>
+  
+</ng-template>
+<ng-template #signInPrompt>
+  <button mat-button role="button" (click)="signIn()">Click here to sign in</button>
+</ng-template>
