@@ -4,9 +4,26 @@
   <h4>
     Welcome {{ user != null ? user.displayName : '' }}! <button mat-button role="button" (click)="signOut()">Sign Out</button>
   </h4>
-  <p>You can now access folders and files.  Continue to <button mat-button><mat-icon svgIcon="threejs"></mat-icon> Scene</button></p>
-  
+  <p>You can now access folders and files.  <!--Continue to <button mat-button><mat-icon svgIcon="threejs"></mat-icon> Scene</button>--></p>
+
 </ng-template>
 <ng-template #signInPrompt>
   <button mat-button role="button" (click)="signIn()">Click here to sign in</button>
 </ng-template>
+
+<div style="display:block;overflow:auto;height:400px">
+  <div *ngIf="folders.length" fxLayoutAlign="start center" (click)="up()" style="height:60px" class="item">
+    <div style="margin:1rem"><mat-icon>arrow_left</mat-icon></div>
+  </div>
+  <div *ngFor="let item of driveitems" (click)="open(item)">
+    <div fxLayout="row" fxLayoutAlign="start center" class="item">
+      <div style="margin:1rem">
+        <mat-icon [style.color]="item.isfolder ? 'yellow' : 'gray'">{{ item.isfolder ? 'folder' : 'insert_drive_file'}}</mat-icon>
+      </div>
+      <div fxFlex fxLayout="column">
+        <div><b>{{item.name}}</b></div>
+        <div>{{item.lastmodified | amTimeAgo}}</div>
+      </div>
+    </div>
+  </div>
+</div>

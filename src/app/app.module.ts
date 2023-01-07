@@ -4,6 +4,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { BrowserCacheLocation, IPublicClientApplication, PublicClientApplication } from '@azure/msal-browser';
 import { MsalModule, MsalService, MSAL_INSTANCE } from '@azure/msal-angular';
+import { MomentModule } from 'ngx-moment';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -15,6 +16,7 @@ import { HomeComponent } from '../home/home.component';
 import { OneDriveComponent } from '../OneDrive/onedrive.component';
 import { OAuthSettings } from '../OneDrive/oauth';
 import { HttpClientModule } from '@angular/common/http';
+import { FlexLayoutModule } from '@angular/flex-layout';
 
 let msalInstance: IPublicClientApplication | undefined = undefined;
 
@@ -47,7 +49,8 @@ export function MSALInstanceFactory(): IPublicClientApplication {
     AppRoutingModule,
     MsalModule,
     HttpClientModule,
-
+    MomentModule,    
+    FlexLayoutModule,
     MatButtonModule,
     MatIconModule,
     MatToolbarModule,
