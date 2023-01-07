@@ -44,7 +44,17 @@
       </div>
       <div fxFlex></div>
       <div style="margin:1rem">
-        <button mat-icon-button (click)="deleteItem(item.id, $event)"><mat-icon>delete</mat-icon></button>
+        <button mat-icon-button (click)="renameItem(item);$event.stopPropagation()" matTooltip="Rename">
+          <mat-icon>drive_file_rename_outline</mat-icon>
+        </button>
+
+        <button mat-icon-button *ngIf="!item.isfolder" [disabled]="item.id!=fileid" (click)="duplicateFile(item.name)" matTooltip="Duplicate File">
+          <mat-icon>file_copy</mat-icon>
+        </button>
+
+        <button mat-icon-button (click)="deleteItem(item.id);$event.stopPropagation()" matTooltip="Delete">
+          <mat-icon>delete</mat-icon>
+        </button>
       </div>
     </div>
   </div>

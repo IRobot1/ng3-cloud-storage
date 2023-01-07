@@ -140,7 +140,7 @@ export class GraphService {
 
     try {
       const result = await this.authService.graphClient
-        .api(`/me/drive/items/${itemid}/content`) 
+        .api(`/me/drive/items/${itemid}/content`)
         .put(content)
 
       return result;
@@ -149,4 +149,41 @@ export class GraphService {
     }
     return undefined;
   }
+
+  async duplicateFile(
+    itemid: string,
+    dupname: string,
+  ): Promise<undefined> {
+    if (!this.authService.graphClient) {
+      console.error('Graph client is not initialized.');
+      return undefined;
+    }
+
+    return this.authService.graphClient
+      .api(`/me/drive/items/${itemid}/copy`)
+      .post({ name: dupname });
+  }
+
+  async renameItem(
+    itemid: string,
+    newname: string,
+  ): Promise<MicrosoftGraph.DriveItem | undefined> {
+    if (!this.authService.graphClient) {
+      console.error('Graph client is not initialized.');
+      return undefined;
+    }
+
+    try {
+      const result = await this.authService.graphClient
+        .api(`/me/drive/items/${itemid}`)
+        .update({ name: newname })
+
+      return result;
+    } catch (error) {
+      console.error('Could not rename item', JSON.stringify(error, null, 2));
+    }
+    return undefined;
+  }
+
+
 }

@@ -128,9 +128,7 @@ export class OneDriveComponent {
     });
   }
 
-  async deleteItem(fileid: string, event: Event) {
-    event.stopPropagation();
-
+  async deleteItem(fileid: string) {
     await this.graph.deleteItem(fileid).then(data => {
       this.driveitems = this.driveitems.filter(item => item.id != fileid);
       if (fileid == this.fileid) this.fileid = this.downloadUrl = undefined;
@@ -144,10 +142,10 @@ export class OneDriveComponent {
     const filename = prompt('Enter file name', 'test.txt');
     if (filename) {
       await this.graph.createFile(this.folderid, filename, "The contents of the file goes here.").then(data => {
-        if (data) {
-          this.addDriveItem(data);
-          this.fileid = data.id;
-        }
+        if (!data) return;
+
+        this.addDriveItem(data);
+        this.fileid = data.id;
       });
     }
   }
@@ -163,6 +161,28 @@ export class OneDriveComponent {
         }
       }
     });
+  }
+
+  async duplicateFile(name: string) {
+    if (!this.fileid) return;
+
+    await this.graph.duplicateFile(this.fileid, 'copy of ' + name).then(data => {
+      const timer = setTimeout(() => {
+        this.refresh();
+        clearTimeout(timer);
+      }, 1000)
+    });
+  }
+
+  async renameItem(item: FileData) {
+    const newname = prompt('Enter new name', item.name);
+    if (newname) {
+      await this.graph.renameItem(item.id, newname).then(data => {
+        if (data && data.name) {
+          item.name = data.name;
+        }
+      });
+    }
   }
 
 }
