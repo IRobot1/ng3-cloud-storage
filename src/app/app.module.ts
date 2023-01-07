@@ -6,17 +6,21 @@ import { BrowserCacheLocation, IPublicClientApplication, PublicClientApplication
 import { MsalModule, MsalService, MSAL_INSTANCE } from '@azure/msal-angular';
 import { MomentModule } from 'ngx-moment';
 
-import { AppRoutingModule } from './app-routing.module';
-import { AppComponent } from './app.component';
-
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { HomeComponent } from '../home/home.component';
-import { OneDriveComponent } from '../OneDrive/onedrive.component';
-import { OAuthSettings } from '../OneDrive/oauth';
+import { MatTooltipModule } from '@angular/material/tooltip';
+
 import { HttpClientModule } from '@angular/common/http';
 import { FlexLayoutModule } from '@angular/flex-layout';
+
+import { AppRoutingModule } from './app-routing.module';
+import { AppComponent } from './app.component';
+
+import { HomeComponent } from '../home/home.component';
+import { OneDriveComponent } from '../OneDrive/onedrive.component';
+
+import { OAuthSettings } from '../OneDrive/oauth';
 
 let msalInstance: IPublicClientApplication | undefined = undefined;
 
@@ -51,9 +55,11 @@ export function MSALInstanceFactory(): IPublicClientApplication {
     HttpClientModule,
     MomentModule,    
     FlexLayoutModule,
+
     MatButtonModule,
     MatIconModule,
     MatToolbarModule,
+    MatTooltipModule,
   ],
   providers: [
     {

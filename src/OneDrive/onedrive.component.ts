@@ -20,6 +20,7 @@ interface FileData {
 export class OneDriveComponent {
   driveitems: Array<FileData> = [];
   folders: Array<string | undefined> = [];
+  folderid?: string;
   fileid?: string;
 
   get authenticated(): boolean {
@@ -50,7 +51,7 @@ export class OneDriveComponent {
     this.authService.handleRedirects().subscribe({
       next: async (result: AuthenticationResult) => {
         if (this.authenticated) {
-          await this.getFiles(this.fileid);
+          this.refresh();
         }
       },
       error: (error: any) => {
@@ -77,58 +78,78 @@ export class OneDriveComponent {
     });
   }
 
+  async refresh() {
+    await this.getFiles(this.folderid);
+  }
+
   async getFiles(id?: string) {
     await this.graph.getFolderItems(id).then(data => {
-      if (data) {
-        this.driveitems.length = 0;
-        data.forEach(item => {
-          this.addDriveItem(item);
-        });
-      }
+      if (!data) return
+
+      this.driveitems.length = 0;
+      data.forEach(item => {
+        this.addDriveItem(item);
+      });
+
     });
   }
+
+  downloadUrl?: string;
 
   async open(item: FileData) {
     if (!item.id) return;
     if (item.isfolder) {
-      this.folders.push(this.fileid);
+      this.folders.push(this.folderid);
       await this.getFiles(item.id);
-      this.fileid = item.id;
+      this.folderid = item.id;
+      this.fileid = this.downloadUrl = undefined;
     }
     else {
       await this.graph.getDownloadUrl(item.id).then(data => {
-        console.warn(data);
+        this.downloadUrl = data;
         this.fileid = item.id;
       });
     }
   }
 
   async up() {
-    this.fileid = this.folders.pop();
-    await this.getFiles(this.fileid);
+    this.fileid = this.downloadUrl = undefined;
+    this.folderid = this.folders.pop();
+    await this.getFiles(this.folderid);
   }
 
   async createFolder() {
-    if (!this.fileid) return;
-    await this.graph.createFolder('test', this.fileid).then(data => {
-      if (data) this.addDriveItem(data);
+    if (!this.folderid) return;
+    await this.graph.createFolder('test', this.folderid).then(data => {
+      if (data) {
+        this.addDriveItem(data);
+        this.folderid = data.id;
+      }
     });
   }
 
   async deleteItem(fileid: string, event: Event) {
-    if (!this.fileid) return;
     event.stopPropagation();
+
     await this.graph.deleteItem(fileid).then(data => {
       this.driveitems = this.driveitems.filter(item => item.id != fileid);
+      if (fileid == this.fileid) this.fileid = this.downloadUrl = undefined;
+      if (fileid == this.folderid) this.folderid = undefined;
     });
   }
 
   async createFile() {
-    if (!this.fileid) return;
+    if (!this.folderid) return;
 
-    await this.graph.createFile(this.fileid, 'test.txt', "The contents of the file goes here.").then(data => {
-      if (data) this.addDriveItem(data);
-    });
+    const filename = prompt('Enter file name', 'test.txt');
+    if (filename) {
+      await this.graph.createFile(this.folderid, filename, "The contents of the file goes here.").then(data => {
+        if (data) {
+          this.addDriveItem(data);
+          this.fileid = data.id;
+        }
+      });
+    }
   }
 
   async updateFile() {
