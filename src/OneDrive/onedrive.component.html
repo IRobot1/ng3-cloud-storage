@@ -11,6 +11,10 @@
   <button mat-button role="button" (click)="signIn()">Click here to sign in</button>
 </ng-template>
 
+<button mat-button (click)="createFolder()">Create Folder</button>
+<button mat-button (click)="createFile()">Create File</button>
+<button mat-button (click)="updateFile()">Update File</button>
+
 <div style="display:block;overflow:auto;height:400px">
   <div *ngIf="folders.length" fxLayoutAlign="start center" (click)="up()" style="height:60px" class="item">
     <div style="margin:1rem"><mat-icon>arrow_left</mat-icon></div>
@@ -23,6 +27,10 @@
       <div fxFlex fxLayout="column">
         <div><b>{{item.name}}</b></div>
         <div>{{item.lastmodified | amTimeAgo}}</div>
+      </div>
+      <div fxFlex></div>
+      <div style="margin:1rem">
+        <button mat-icon-button (click)="deleteItem(item.id, $event)"><mat-icon color="accent">delete</mat-icon></button>
       </div>
     </div>
   </div>

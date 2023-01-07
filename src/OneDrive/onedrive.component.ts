@@ -67,18 +67,22 @@ export class OneDriveComponent {
     this.authService.signOut();
   }
 
+  private addDriveItem(item: MicrosoftGraph.DriveItem) {
+    this.driveitems.push(<FileData>{
+      isfolder: item.folder != undefined,
+      name: item.name,
+      id: item.id,
+      extension: item.name ? this.getFileExtension(item.name) : '',
+      lastmodified: item.lastModifiedDateTime,
+    });
+  }
+
   async getFiles(id?: string) {
-    await this.graph.getDriveItem(id).then(data => {
+    await this.graph.getFolderItems(id).then(data => {
       if (data) {
         this.driveitems.length = 0;
         data.forEach(item => {
-          this.driveitems.push(<FileData>{
-            isfolder: item.folder != undefined,
-            name: item.name,
-            id: item.id,
-            extension: item.name ? this.getFileExtension(item.name) : '',
-            lastmodified: item.lastModifiedDateTime
-          });
+          this.addDriveItem(item);
         });
       }
     });
@@ -92,7 +96,10 @@ export class OneDriveComponent {
       this.fileid = item.id;
     }
     else {
-      console.warn('download', item.name)
+      await this.graph.getDownloadUrl(item.id).then(data => {
+        console.warn(data);
+        this.fileid = item.id;
+      });
     }
   }
 
@@ -100,4 +107,41 @@ export class OneDriveComponent {
     this.fileid = this.folders.pop();
     await this.getFiles(this.fileid);
   }
+
+  async createFolder() {
+    if (!this.fileid) return;
+    await this.graph.createFolder('test', this.fileid).then(data => {
+      if (data) this.addDriveItem(data);
+    });
+  }
+
+  async deleteItem(fileid: string, event: Event) {
+    if (!this.fileid) return;
+    event.stopPropagation();
+    await this.graph.deleteItem(fileid).then(data => {
+      this.driveitems = this.driveitems.filter(item => item.id != fileid);
+    });
+  }
+
+  async createFile() {
+    if (!this.fileid) return;
+
+    await this.graph.createFile(this.fileid, 'test.txt', "The contents of the file goes here.").then(data => {
+      if (data) this.addDriveItem(data);
+    });
+  }
+
+  async updateFile() {
+    if (!this.fileid) return;
+
+    await this.graph.updateFile(this.fileid, "New contents: " + Date.now().toString()).then(data => {
+      if (data && data.lastModifiedDateTime) {
+        const file = this.driveitems.find(item => item.id == this.fileid);
+        if (file) {
+          file.lastmodified = data.lastModifiedDateTime;
+        }
+      }
+    });
+  }
+
 }
