@@ -22,6 +22,7 @@ import { HomeComponent } from '../home/home.component';
 import { OneDriveComponent } from '../OneDrive/onedrive.component';
 
 import { OAuthSettings } from '../OneDrive/oauth';
+import { WebFileListComponent } from '../web-file-list/web-file-list.component';
 
 let msalInstance: IPublicClientApplication | undefined = undefined;
 
@@ -47,6 +48,7 @@ export function MSALInstanceFactory(): IPublicClientApplication {
 
     HomeComponent,
     OneDriveComponent,
+    WebFileListComponent,
   ],
   imports: [
     BrowserModule,
