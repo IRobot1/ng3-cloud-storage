@@ -12,16 +12,40 @@ interface FileData {
   lastmodified: string;
 }
 
+interface FilterData {
+  name: string,
+  filter: string,
+}
+
 @Component({
   selector: 'app-onedrive',
   templateUrl: './onedrive.component.html',
   styleUrls: ['./onedrive.component.css']
 })
 export class OneDriveComponent {
+  filtereditems: Array<FileData> = [];
   driveitems: Array<FileData> = [];
   folders: Array<string | undefined> = [];
   folderid?: string;
   fileid?: string;
+
+  filters: Array<FilterData> = [
+    { name: 'All Files', filter: '' },
+    { name: 'Models', filter: 'ply,glft' },
+    { name: 'Textures', filter: 'png,jpg' },
+    { name: 'Images', filter: 'png,jpg' },
+    { name: 'SVG', filter: 'svg' },
+    { name: 'Materials', filter: 'json' },
+    { name: 'Fonts', filter: 'json' },
+    { name: 'Animation Clips', filter: 'json' },
+    { name: 'Audio', filter: 'ogg' },
+  ]
+  filter: Array<string> = [''];
+
+  displayfilter(item: FilterData) {
+    if (item.filter) return `${item.name} (${item.filter})`
+    return item.name
+  }
 
   get authenticated(): boolean {
     return this.authService.authenticated;
@@ -69,13 +93,19 @@ export class OneDriveComponent {
   }
 
   private addDriveItem(item: MicrosoftGraph.DriveItem) {
-    this.driveitems.push(<FileData>{
+    const driveitem = <FileData>{
       isfolder: item.folder != undefined,
       name: item.name,
       id: item.id,
       extension: item.name ? this.getFileExtension(item.name) : '',
       lastmodified: item.lastModifiedDateTime,
-    });
+    }
+
+    this.driveitems.push(driveitem);
+
+    if (this.filter[0] == '' || driveitem.isfolder || this.filter.includes(driveitem.extension)) {
+      this.filtereditems.push(driveitem);
+    }
   }
 
   async refresh() {
@@ -86,11 +116,11 @@ export class OneDriveComponent {
     await this.graph.getFolderItems(id).then(data => {
       if (!data) return
 
-      this.driveitems.length = 0;
+      this.driveitems.length = this.filtereditems.length = 0;
       data.forEach(item => {
-        this.addDriveItem(item);
+        if (!item.name?.startsWith('.'))
+          this.addDriveItem(item);
       });
-
     });
   }
 
@@ -120,17 +150,21 @@ export class OneDriveComponent {
 
   async createFolder() {
     if (!this.folderid) return;
-    await this.graph.createFolder('test', this.folderid).then(data => {
-      if (data) {
-        this.addDriveItem(data);
-        this.folderid = data.id;
-      }
-    });
+
+    const foldername = prompt('Enter folder name', 'newfolder');
+    if (foldername) {
+      await this.graph.createFolder(foldername, this.folderid).then(data => {
+        if (data) {
+          this.addDriveItem(data);
+        }
+      });
+    }
   }
 
   async deleteItem(fileid: string) {
     await this.graph.deleteItem(fileid).then(data => {
       this.driveitems = this.driveitems.filter(item => item.id != fileid);
+      this.filtereditems = this.driveitems.filter(item => item.id != fileid);
       if (fileid == this.fileid) this.fileid = this.downloadUrl = undefined;
       if (fileid == this.folderid) this.folderid = undefined;
     });
@@ -185,4 +219,14 @@ export class OneDriveComponent {
     }
   }
 
+  applyfilter() {
+    this.filtereditems = this.driveitems.filter(item => {
+      return this.filter[0] == '' || item.isfolder || this.filter.includes(item.extension)
+    });
+  }
+
+  changeFilter(newfilter: string) {
+    this.filter = newfilter.split(',');
+    this.applyfilter();
+  }
 }

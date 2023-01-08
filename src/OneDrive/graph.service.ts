@@ -1,6 +1,3 @@
-// Copyright (c) Microsoft Corporation.
-// Licensed under the MIT License.
-
 import { Injectable } from '@angular/core';
 import * as MicrosoftGraph from '@microsoft/microsoft-graph-types';
 

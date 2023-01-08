@@ -1,6 +1,3 @@
-// Copyright (c) Microsoft Corporation.
-// Licensed under the MIT License.
-
 import { Injectable } from '@angular/core';
 import { MsalService } from '@azure/msal-angular';
 import {

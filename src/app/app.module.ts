@@ -10,6 +10,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatSelectModule } from '@angular/material/select';
 
 import { HttpClientModule } from '@angular/common/http';
 import { FlexLayoutModule } from '@angular/flex-layout';
@@ -60,6 +61,7 @@ export function MSALInstanceFactory(): IPublicClientApplication {
     MatIconModule,
     MatToolbarModule,
     MatTooltipModule,
+    MatSelectModule,
   ],
   providers: [
     {

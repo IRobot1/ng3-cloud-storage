@@ -30,10 +30,14 @@
   <button mat-icon-button (click)="refresh()" matTooltip="Refresh">
     <mat-icon>refresh</mat-icon>
   </button>
+
+  <mat-select style="margin-left:1rem;width:250px" [value]="''" (selectionChange)="changeFilter($event.value)">
+    <mat-option *ngFor="let item of filters" [value]="item.filter">{{ displayfilter(item) }}</mat-option>
+  </mat-select>
 </mat-toolbar>
 
 <div style="display:block;overflow:auto;height:400px">
-  <div *ngFor="let item of driveitems" (click)="open(item)">
+  <div *ngFor="let item of filtereditems" (click)="open(item)">
     <div fxLayout="row" fxLayoutAlign="start center" class="item">
       <div style="margin:1rem">
         <mat-icon [style.color]="item.isfolder ? 'yellow' : 'gray'">{{ item.isfolder ? 'folder' : 'insert_drive_file'}}</mat-icon>
