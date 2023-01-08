@@ -113,7 +113,7 @@ export class WebFileListComponent {
     }
   }
 
-  protected async up() {
+  protected async back() {
     this.fileid = this.downloadUrl = undefined;
     this.folderid = this.folders.pop();
     await this.getFiles(this.folderid);

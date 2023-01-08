@@ -6,7 +6,7 @@ import { AuthService } from './auth.service';
 @Injectable({
   providedIn: 'root',
 })
-export class GraphService {
+export class OneDriveService {
   constructor(
     private authService: AuthService,
   ) { }
