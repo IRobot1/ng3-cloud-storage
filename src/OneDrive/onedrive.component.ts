@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { AuthenticationResult } from '@azure/msal-browser';
 import { AuthService, User } from './auth.service';
-import { GraphService } from './graph.service';
+import { OneDriveService } from './onedrive.service';
 import * as MicrosoftGraph from '@microsoft/microsoft-graph-types';
 
 interface FileData {
@@ -66,7 +66,7 @@ export class OneDriveComponent {
 
   constructor(
     private authService: AuthService,
-    private graph: GraphService,
+    private graph: OneDriveService,
   ) { }
 
   ngOnInit() {

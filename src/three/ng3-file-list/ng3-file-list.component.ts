@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import * as MicrosoftGraph from '@microsoft/microsoft-graph-types';
-import { OneDriveService } from '../OneDrive/onedrive.service';
+import { OneDriveService } from '../../OneDrive/onedrive.service';
 
 interface FileData {
   isfolder: boolean,
@@ -16,11 +16,11 @@ interface FilterData {
 }
 
 @Component({
-  selector: 'web-file-list',
-  templateUrl: './web-file-list.component.html',
-  styleUrls: ['./web-file-list.component.css']
+  selector: 'ng3-file-list',
+  templateUrl: './ng3-file-list.component.html',
+  styleUrls: ['./ng3-file-list.component.css']
 })
-export class WebFileListComponent {
+export class Ng3FileListComponent {
   protected filtereditems: Array<FileData> = [];
   protected fileid?: string;
   protected folders: Array<string | undefined> = [];

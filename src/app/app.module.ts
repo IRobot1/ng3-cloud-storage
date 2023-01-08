@@ -23,6 +23,16 @@ import { OneDriveComponent } from '../OneDrive/onedrive.component';
 
 import { OAuthSettings } from '../OneDrive/oauth';
 import { WebFileListComponent } from '../web-file-list/web-file-list.component';
+import { Ng3FileListComponent } from '../three/ng3-file-list/ng3-file-list.component';
+
+import { NgtCanvasModule } from '@angular-three/core';
+import { NgtColorAttributeModule } from '@angular-three/core/attributes';
+import { NgtPointLightModule } from '@angular-three/core/lights';
+import { NgtMeshModule } from '@angular-three/core/meshes';
+import { NgtBoxGeometryModule } from '@angular-three/core/geometries';
+import { NgtMeshBasicMaterialModule } from '@angular-three/core/materials';
+import { ThreeSceneComponent } from '../three/scene/scene.component';
+
 
 let msalInstance: IPublicClientApplication | undefined = undefined;
 
@@ -49,6 +59,9 @@ export function MSALInstanceFactory(): IPublicClientApplication {
     HomeComponent,
     OneDriveComponent,
     WebFileListComponent,
+
+    ThreeSceneComponent,
+    Ng3FileListComponent,
   ],
   imports: [
     BrowserModule,
@@ -56,7 +69,7 @@ export function MSALInstanceFactory(): IPublicClientApplication {
     AppRoutingModule,
     MsalModule,
     HttpClientModule,
-    MomentModule,    
+    MomentModule,
     FlexLayoutModule,
 
     MatButtonModule,
@@ -64,6 +77,13 @@ export function MSALInstanceFactory(): IPublicClientApplication {
     MatToolbarModule,
     MatTooltipModule,
     MatSelectModule,
+
+    NgtCanvasModule,
+    NgtColorAttributeModule,
+    NgtPointLightModule,
+    NgtMeshModule,
+    NgtBoxGeometryModule,
+    NgtMeshBasicMaterialModule,
   ],
   providers: [
     {

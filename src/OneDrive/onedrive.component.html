@@ -11,4 +11,11 @@
   <button mat-button role="button" (click)="signIn()">Click here to sign in</button>
 </ng-template>
 
-<web-file-list></web-file-list>
+<div fxLayout="row">
+  <div style="width:50%">
+    <web-file-list></web-file-list>
+  </div>
+  <div style="width:50%">
+    <three-scene></three-scene>
+  </div>
+</div>
