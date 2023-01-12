@@ -2,18 +2,7 @@ import { Component } from '@angular/core';
 import * as MicrosoftGraph from '@microsoft/microsoft-graph-types';
 import { OneDriveService } from '../OneDrive/onedrive.service';
 
-interface FileData {
-  isfolder: boolean,
-  id: string;
-  name: string;
-  extension: string;
-  lastmodified: string;
-}
-
-interface FilterData {
-  name: string,
-  filter: string,
-}
+import { FileData, FilterData } from '../OneDrive/file-list';
 
 @Component({
   selector: 'web-file-list',

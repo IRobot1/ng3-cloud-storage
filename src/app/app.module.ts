@@ -32,6 +32,9 @@ import { NgtMeshModule } from '@angular-three/core/meshes';
 import { NgtBoxGeometryModule } from '@angular-three/core/geometries';
 import { NgtMeshBasicMaterialModule } from '@angular-three/core/materials';
 import { ThreeSceneComponent } from '../three/scene/scene.component';
+import { Ng3FlatUiModule } from 'ng3-flat-ui';
+import { NgtGroupModule } from '@angular-three/core/group';
+import { NgtSobaOrbitControlsModule } from '@angular-three/soba/controls'
 
 
 let msalInstance: IPublicClientApplication | undefined = undefined;
@@ -82,8 +85,13 @@ export function MSALInstanceFactory(): IPublicClientApplication {
     NgtColorAttributeModule,
     NgtPointLightModule,
     NgtMeshModule,
+    NgtGroupModule,
     NgtBoxGeometryModule,
     NgtMeshBasicMaterialModule,
+
+    NgtSobaOrbitControlsModule,
+
+    Ng3FlatUiModule,
   ],
   providers: [
     {

@@ -1,38 +1,29 @@
-<ngt-color attach="background" color="black"></ngt-color>
+<ngt-mesh-basic-material #yellow noAppend color="yellow"></ngt-mesh-basic-material>
+<ngt-mesh-basic-material #black noAppend color="black"></ngt-mesh-basic-material>
 
-<ngt-point-light [position]="[0, 0, 2]"></ngt-point-light>
+<ngt-group [name]="name" [visible]="visible" [position]="position" [rotation]="rotation" [scale]="scale">
+  <flat-ui-menu-mini #menu [menuitems]="menuitems" [selectable]="selectable"></flat-ui-menu-mini>
 
-<ngt-mesh [rotation]="[0, 1, 0]">
-  <ngt-box-geometry></ngt-box-geometry>
-  <ngt-mesh-basic-material color="red"></ngt-mesh-basic-material>
-</ngt-mesh>
+  <flat-ui-select #select [text]="filtervalue" [position]="[menu.width+0.5, 0, 0]" [selectable]="selectable"
+                  (change)="changeFilter($event)" (openinput)="input.openlist($event, select, filterlist, filtervalue)">
+  </flat-ui-select>
 
+  <flat-ui-list [position]="[1, -0.65, 0]" [width]="2" [height]="1" [rowcount]="4" [rowsize]="0.2"
+                [enablehover]="true" [list]="filtereditems" [selectable]="selectable">
+
+    <ng-template #listItem let-list="list" let-text="text" let-width="width" let-data="data" let-index="index" let-parent="parent">
+      <ngt-group *ngIf="data" [appendTo]="parent">
+        <flat-ui-material-icon [position]="[-0.9, 0, 0]" [fontsize]="0.1" [labelmaterial]="data.isfolder ? yellow.instance.value : black.instance.value" [text]="data.isfolder ? 'folder' : 'insert_drive_file'"></flat-ui-material-icon>
+        <flat-ui-label [position]="[0, 0.05, 0]" [text]="data.name" [width]="1.6"></flat-ui-label>
+        <flat-ui-label [position]="[0, -0.05, 0]" text="{{data.lastmodified | amTimeAgo}}" [width]="1.6"></flat-ui-label>
+      </ngt-group>
+    </ng-template>
+
+  </flat-ui-list>
+
+
+</ngt-group>
 <!--<mat-toolbar>
-  <button [disabled]="!folders.length" mat-icon-button (click)="back()" matTooltip="Back">
-    <mat-icon>arrow_back</mat-icon>
-  </button>
-  <button mat-icon-button (click)="createFolder()" matTooltip="Create Folder">
-    <mat-icon [style.color]="'yellow'">create_new_folder</mat-icon>
-  </button>
-
-  <button mat-icon-button (click)="createFile()" matTooltip="Create File">
-    <mat-icon>note_add</mat-icon>
-  </button>
-
-  <button mat-icon-button [disabled]="!downloadUrl" (click)="updateFile()" matTooltip="Update File">
-    <mat-icon>save</mat-icon>
-  </button>
-
-  <button mat-icon-button (click)="refresh()" matTooltip="Refresh">
-    <mat-icon>refresh</mat-icon>
-  </button>
-
-  <mat-select style="margin-left:1rem;width:250px" [value]="''" (selectionChange)="changeFilter($event.value)">
-    <mat-option *ngFor="let item of filters" [value]="item.filter">{{ displayfilter(item) }}</mat-option>
-  </mat-select>
-</mat-toolbar>
-
-<div style="display:block;overflow:auto;height:400px">
   <div *ngFor="let item of filtereditems" (click)="open(item)">
     <div fxLayout="row" fxLayoutAlign="start center" class="item">
       <div style="margin:1rem">
@@ -57,5 +48,9 @@
         </button>
       </div>
     </div>
-  </div>
 </div>-->
+
+<flat-ui-list *ngIf="input.showlist" [list]="input.list" [selectedtext]="input.method.text" [rowcount]="9" [height]="1.2"
+              [position]="input.position" [rotation]="input.rotation" [scale]="scale" [selectable]="selectable"
+              (change)="input.method.text = $event.text;input.showlist=false" (close)="input.showlist=false;input.closeinput()">
+</flat-ui-list>

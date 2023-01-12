@@ -1,29 +1,38 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, ViewChild } from '@angular/core';
 import * as MicrosoftGraph from '@microsoft/microsoft-graph-types';
+
 import { OneDriveService } from '../../OneDrive/onedrive.service';
 
-interface FileData {
-  isfolder: boolean,
-  id: string;
-  name: string;
-  extension: string;
-  lastmodified: string;
-}
-
-interface FilterData {
-  name: string,
-  filter: string,
-}
+import { FileData, FilterData } from '../../OneDrive/file-list';
+import { FlatUIInputService, FlatUIList, InteractiveObjects, ListItem, MenuItem } from 'ng3-flat-ui';
+import { NgtObjectProps } from '@angular-three/core';
+import { Group } from 'three';
 
 @Component({
   selector: 'ng3-file-list',
   templateUrl: './ng3-file-list.component.html',
-  styleUrls: ['./ng3-file-list.component.css']
+  //changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [FlatUIInputService],
 })
-export class Ng3FileListComponent {
-  protected filtereditems: Array<FileData> = [];
+export class Ng3FileListComponent extends NgtObjectProps<Group> {
+  @Input() selectable?: InteractiveObjects;
+
+  @ViewChild(FlatUIList) uilist!: FlatUIList;
+
+  protected filtereditems: Array<ListItem> = [];
+  protected filtervalue = 'All Files';
+
   protected fileid?: string;
   protected folders: Array<string | undefined> = [];
+
+  menuitems: Array<MenuItem> = [
+    { text: 'Back', keycode: 'Backspace', icon: 'arrow_back', enabled: false, selected: () => { this.back() } },
+    { text: 'Create Folder', keycode: 'F2', icon: 'create_new_folder', enabled: true, selected: () => { this.createFolder(); } },
+    { text: 'Create File', keycode: 'Ctrl+N', icon: 'note_add', enabled: true, selected: () => { this.createFile(); } },
+    { text: 'Update File', keycode: 'Ctrl+S', icon: 'save', enabled: this.downloadUrl == undefined, selected: () => { this.updateFile(); } },
+    { text: 'Refresh', keycode: 'F5', icon: 'refresh', enabled: true, selected: () => { this.refresh(); } },
+  ]
+  protected menuwidth = 0;
 
   private driveitems: Array<FileData> = [];
   private folderid?: string;
@@ -39,6 +48,8 @@ export class Ng3FileListComponent {
     { name: 'Animation Clips', filter: 'json' },
     { name: 'Audio', filter: 'ogg' },
   ]
+  protected filterlist: Array<ListItem> = [];
+
   private filter: Array<string> = [''];
 
   protected displayfilter(item: FilterData) {
@@ -57,10 +68,19 @@ export class Ng3FileListComponent {
 
   constructor(
     private graph: OneDriveService,
-  ) { }
+    public input: FlatUIInputService,
+    private cd : ChangeDetectorRef,
+  ) {
+    super();
+  }
 
-  ngOnInit() {
+  override ngOnInit() {
+    super.ngOnInit();
+
+    this.filterlist = this.filters.map(item => <ListItem>{ text: this.displayfilter(item) });
+
     this.refresh();
+
   }
 
   private addDriveItem(item: MicrosoftGraph.DriveItem) {
@@ -75,12 +95,14 @@ export class Ng3FileListComponent {
     this.driveitems.push(driveitem);
 
     if (this.filter[0] == '' || driveitem.isfolder || this.filter.includes(driveitem.extension)) {
-      this.filtereditems.push(driveitem);
+      this.filtereditems.push({ text: driveitem.name, data: driveitem });
     }
   }
 
   protected async refresh() {
     await this.getFiles(this.folderid);
+    this.cd.detectChanges();
+    this.uilist.movefirst();
   }
 
   private async getFiles(id?: string) {
@@ -135,7 +157,7 @@ export class Ng3FileListComponent {
   protected async deleteItem(fileid: string) {
     await this.graph.deleteItem(fileid).then(data => {
       this.driveitems = this.driveitems.filter(item => item.id != fileid);
-      this.filtereditems = this.driveitems.filter(item => item.id != fileid);
+      this.filtereditems = this.driveitems.filter(item => item.id != fileid).map(item => <ListItem>{ text: item.name, data: item });
       if (fileid == this.fileid) this.fileid = this.downloadUrl = undefined;
       if (fileid == this.folderid) this.folderid = undefined;
     });
@@ -193,10 +215,11 @@ export class Ng3FileListComponent {
   private applyfilter() {
     this.filtereditems = this.driveitems.filter(item => {
       return this.filter[0] == '' || item.isfolder || this.filter.includes(item.extension)
-    });
+    }).map(item => <ListItem>{ text: item.name, data: item});
   }
 
   protected changeFilter(newfilter: string) {
+    this.filtervalue = newfilter;
     this.filter = newfilter.split(',');
     this.applyfilter();
   }

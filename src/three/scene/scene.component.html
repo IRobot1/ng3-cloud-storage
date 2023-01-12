@@ -1,5 +1,12 @@
 <div style="height:460px">
   <ngt-canvas [camera]="{ fov: 55, position: [0, 0, 2]}">
-    <ng3-file-list></ng3-file-list>
+    <ngt-color attach="background" color="black"></ngt-color>
+
+    <ngt-point-light [position]="[0, 0, 2]"></ngt-point-light>
+
+    <ng3-file-list [position]="[-1, 0.5, 0]"></ng3-file-list>
+
+    <ngt-soba-orbit-controls [enableRotate]="true"></ngt-soba-orbit-controls>
+
   </ngt-canvas>
 </div>
