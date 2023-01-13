@@ -8,7 +8,7 @@
                   (change)="changeFilter($event)" (openinput)="input.openlist($event, select, filterlist, filtervalue)">
   </flat-ui-select>
 
-  <flat-ui-list [position]="[width/2, -0.65, 0]" [width]="width" [height]="1" [rowcount]="4" [rowsize]="rowheight"
+  <flat-ui-list [position]="[width/2, -height/2-0.15, 0]" [width]="width" [height]="height" [rowcount]="rowcount" [rowsize]="rowheight"
                 [enablehover]="true" [list]="filtereditems" [selectable]="selectable">
 
     <ng-template #listItem let-list="list" let-text="text" let-width="width" let-data="data" let-index="index" let-parent="parent">

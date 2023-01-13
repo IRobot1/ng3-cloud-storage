@@ -16,11 +16,21 @@ import { Group, MeshBasicMaterial } from 'three';
 })
 export class Ng3FileListComponent extends NgtObjectProps<Group> {
   @Input() width = 2;
+
+  private _height = 1;
+  @Input()
+  get height(): number { return this._height }
+  set height(newvalue: number) {
+    this._height = newvalue;
+    this.rowcount = Math.round((newvalue - 0.26) / (this.rowheight + 0.01));
+  }
+
   @Input() selectable?: InteractiveObjects;
 
   @Output() fileselected = new EventEmitter<string>();
 
   protected rowheight = 0.2;
+  protected rowcount = 4;
 
   protected filtereditems: Array<ListItem> = [];
   protected filtervalue = 'All Files';
