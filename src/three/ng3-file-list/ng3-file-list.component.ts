@@ -15,6 +15,7 @@ import { Group, MeshBasicMaterial } from 'three';
   providers: [FlatUIInputService],
 })
 export class Ng3FileListComponent extends NgtObjectProps<Group> {
+  @Input() width = 2;
   @Input() selectable?: InteractiveObjects;
 
   @Output() fileselected = new EventEmitter<string>();

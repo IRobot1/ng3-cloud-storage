@@ -8,7 +8,7 @@
                   (change)="changeFilter($event)" (openinput)="input.openlist($event, select, filterlist, filtervalue)">
   </flat-ui-select>
 
-  <flat-ui-list [position]="[1, -0.65, 0]" [width]="2" [height]="1" [rowcount]="4" [rowsize]="rowheight"
+  <flat-ui-list [position]="[width/2, -0.65, 0]" [width]="width" [height]="1" [rowcount]="4" [rowsize]="rowheight"
                 [enablehover]="true" [list]="filtereditems" [selectable]="selectable">
 
     <ng-template #listItem let-list="list" let-text="text" let-width="width" let-data="data" let-index="index" let-parent="parent">
@@ -17,13 +17,13 @@
           <ng-template #button let-parent="parent">
             <ngt-group [appendTo]="parent">
 
-              <flat-ui-material-icon [position]="[-0.9, 0, 0]" [fontsize]="0.1" [labelmaterial]="data.isfolder ? yellow.instance.value : black.instance.value" [text]="data.isfolder ? 'folder' : 'insert_drive_file'"></flat-ui-material-icon>
-              <flat-ui-label [position]="[0, 0.05, 0]" [text]="data.name" [width]="1.6"></flat-ui-label>
-              <flat-ui-label [position]="[0, -0.05, 0]" text="{{data.lastmodified | amTimeAgo}}" [width]="1.6"></flat-ui-label>
+              <flat-ui-material-icon [position]="[-width/2+0.1, 0, 0]" [fontsize]="0.1" [labelmaterial]="data.isfolder ? yellow.instance.value : black.instance.value" [text]="data.isfolder ? 'folder' : 'insert_drive_file'"></flat-ui-material-icon>
+              <flat-ui-label [position]="[0, 0.05, 0]" [text]="data.name" [width]="width-0.4"></flat-ui-label>
+              <flat-ui-label [position]="[0, -0.05, 0]" text="{{data.lastmodified | amTimeAgo}}" [width]="width-0.4"></flat-ui-label>
 
             </ngt-group>
 
-            <flat-ui-menu-mini [position]="[0.6, 0, 0]" [selectable]="selectable">
+            <flat-ui-menu-mini [position]="[width/2-0.4, 0, 0]" [selectable]="selectable">
               <flat-ui-menu-item [text]="'Rename'" [icon]="'drive_file_rename_outline'" (pressed)="renameItem(data)"></flat-ui-menu-item>
               <flat-ui-menu-item *ngIf="!data.isfolder" [enabled]="data.id==fileid" [text]="'Duplicate File'" [icon]="'file_copy'" (pressed)="duplicateFile(data.name)"></flat-ui-menu-item>
               <flat-ui-menu-item [text]="'Delete'" [icon]="'delete'" (pressed)="deleteItem(data.id)"></flat-ui-menu-item>
