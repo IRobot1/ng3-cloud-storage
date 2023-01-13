@@ -4,7 +4,7 @@
 
     <ngt-point-light [position]="[0, 0, 2]"></ngt-point-light>
 
-    <ng3-file-list [position]="[-1, 0.5, 0]"></ng3-file-list>
+    <ng3-file-list *ngIf="browse" [position]="[-1, 0.5, 0]" (fileselected)="open($event)"></ng3-file-list>
 
     <ngt-soba-orbit-controls [enableRotate]="true"></ngt-soba-orbit-controls>
 

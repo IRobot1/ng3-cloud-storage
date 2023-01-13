@@ -1,10 +1,10 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import * as MicrosoftGraph from '@microsoft/microsoft-graph-types';
 
 import { OneDriveService } from '../../OneDrive/onedrive.service';
 
 import { FileData, FilterData } from '../../OneDrive/file-list';
-import { FlatUIInputService, FlatUIList, InteractiveObjects, ListItem, MenuItem } from 'ng3-flat-ui';
+import { FlatUIInputService, InteractiveObjects, ListItem, MenuItem } from 'ng3-flat-ui';
 import { NgtObjectProps } from '@angular-three/core';
 import { Group, MeshBasicMaterial } from 'three';
 
@@ -17,7 +17,7 @@ import { Group, MeshBasicMaterial } from 'three';
 export class Ng3FileListComponent extends NgtObjectProps<Group> {
   @Input() selectable?: InteractiveObjects;
 
-  //@ViewChild(FlatUIList) uilist!: FlatUIList;
+  @Output() fileselected = new EventEmitter<string>();
 
   protected rowheight = 0.2;
 
@@ -29,7 +29,7 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
 
   menuitems: Array<MenuItem> = [
     { text: 'Back', keycode: 'Backspace', icon: 'arrow_back', enabled: false, selected: () => { this.back() } },
-    { text: 'Create Folder', keycode: '', icon: 'create_new_folder', enabled: true, color: new MeshBasicMaterial({ color: 'yellow'}), selected: () => { this.createFolder(); } },
+    { text: 'Create Folder', keycode: '', icon: 'create_new_folder', enabled: true, color: new MeshBasicMaterial({ color: 'yellow' }), selected: () => { this.createFolder(); } },
     { text: 'Create File', keycode: 'Ctrl+N', icon: 'note_add', enabled: true, selected: () => { this.createFile(); } },
     { text: 'Update File', keycode: 'Ctrl+S', icon: 'save', enabled: true, selected: () => { this.updateFile(); } },
     { text: 'Refresh', keycode: 'F5', icon: 'refresh', enabled: true, selected: () => { this.refresh(); } },
@@ -71,7 +71,7 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
   constructor(
     private graph: OneDriveService,
     public input: FlatUIInputService,
-    private cd : ChangeDetectorRef,
+    private cd: ChangeDetectorRef,
   ) {
     super();
   }
@@ -96,9 +96,6 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
 
     this.driveitems.push(driveitem);
 
-    if (this.filter[0] == '' || driveitem.isfolder || this.filter.includes(driveitem.extension)) {
-      this.filtereditems.push({ text: driveitem.name, data: driveitem });
-    }
   }
 
   protected async refresh() {
@@ -109,11 +106,12 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
     await this.graph.getFolderItems(id).then(data => {
       if (!data) return
 
-      this.driveitems.length = this.filtereditems.length = 0;
+      this.driveitems.length = 0;
       data.forEach(item => {
         if (!item.name?.startsWith('.'))
           this.addDriveItem(item);
       });
+      this.applyfilter();
     });
   }
 
@@ -139,8 +137,10 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
         this.downloadUrl = data;
         this.fileid = item.id;
         updatefile.enabled = true;
+        if (data) this.fileselected.next(data);
       });
     }
+    this.cd.detectChanges();
   }
 
   protected async back() {
@@ -160,6 +160,7 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
       await this.graph.createFolder(foldername, this.folderid).then(data => {
         if (data) {
           this.addDriveItem(data);
+          this.applyfilter();
         }
       });
     }
@@ -184,6 +185,8 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
 
         this.addDriveItem(data);
         this.fileid = data.id;
+
+        this.applyfilter();
       });
     }
   }
@@ -196,6 +199,7 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
         const file = this.driveitems.find(item => item.id == this.fileid);
         if (file) {
           file.lastmodified = data.lastModifiedDateTime;
+          this.cd.detectChanges();
         }
       }
     });
@@ -218,20 +222,28 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
       await this.graph.renameItem(item.id, newname).then(data => {
         if (data && data.name) {
           item.name = data.name;
+          this.cd.detectChanges();
         }
       });
     }
   }
 
   private applyfilter() {
-    this.filtereditems = this.driveitems.filter(item => {
+    const driveitems = this.driveitems.filter(item => {
       return this.filter[0] == '' || item.isfolder || this.filter.includes(item.extension)
-    }).map(item => <ListItem>{ text: item.name, data: item});
+    });
+    this.filtereditems = driveitems.map(item => <ListItem>{ text: item.name, data: item });
+    this.cd.detectChanges();
   }
 
   protected changeFilter(newfilter: string) {
+    if (newfilter == this.filtervalue) return;
+
     this.filtervalue = newfilter;
-    this.filter = newfilter.split(',');
-    this.applyfilter();
+    const item = this.filters.find(item => newfilter.startsWith(item.name));
+    if (item) {
+      this.filter = item.filter.split(',');
+      this.applyfilter();
+    }
   }
 }
