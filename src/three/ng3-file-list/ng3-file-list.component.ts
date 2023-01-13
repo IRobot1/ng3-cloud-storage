@@ -25,6 +25,19 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
     this.rowcount = Math.round((newvalue - 0.26) / (this.rowheight + 0.01));
   }
 
+  private _filters: Array<FilterData> = [
+    { name: 'All Files', filter: '' },
+  ]
+
+  @Input()
+  get filters(): Array<FilterData> { return this._filters }
+  set filters(newvalue: Array<FilterData>) {
+    this._filters = newvalue;
+    this.filterlist = this.filters.map(item => <ListItem>{ text: this.displayfilter(item) });
+  }
+
+  protected filterlist: Array<ListItem> = [{ text: 'All Files' }];
+
   @Input() selectable?: InteractiveObjects;
 
   @Output() fileselected = new EventEmitter<string>();
@@ -50,18 +63,6 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
   private driveitems: Array<FileData> = [];
   private folderid?: string;
 
-  protected filters: Array<FilterData> = [
-    { name: 'All Files', filter: '' },
-    { name: 'Models', filter: 'ply,glft' },
-    { name: 'Textures', filter: 'png,jpg' },
-    { name: 'Images', filter: 'png,jpg' },
-    { name: 'SVG', filter: 'svg' },
-    { name: 'Materials', filter: 'json' },
-    { name: 'Fonts', filter: 'json' },
-    { name: 'Animation Clips', filter: 'json' },
-    { name: 'Audio', filter: 'ogg' },
-  ]
-  protected filterlist: Array<ListItem> = [];
 
   private filter: Array<string> = [''];
 
@@ -89,8 +90,6 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
 
   override ngOnInit() {
     super.ngOnInit();
-
-    this.filterlist = this.filters.map(item => <ListItem>{ text: this.displayfilter(item) });
 
     this.refresh();
 
