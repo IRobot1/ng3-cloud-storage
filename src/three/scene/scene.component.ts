@@ -1,4 +1,5 @@
 import { Component } from "@angular/core";
+import { InteractiveObjects } from "ng3-flat-ui";
 import { FilterData } from "../../OneDrive/file-list";
 
 @Component({
@@ -7,6 +8,8 @@ import { FilterData } from "../../OneDrive/file-list";
   //styleUrls: ['./scene.component.css']
 })
 export class ThreeSceneComponent {
+  selectable = new InteractiveObjects();
+
   filters: Array<FilterData> = [
     { name: 'All Files', filter: '' },
     { name: 'Models', filter: 'ply,glft' },

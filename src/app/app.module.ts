@@ -35,6 +35,7 @@ import { ThreeSceneComponent } from '../three/scene/scene.component';
 import { Ng3FlatUiModule } from 'ng3-flat-ui';
 import { NgtGroupModule } from '@angular-three/core/group';
 import { NgtSobaOrbitControlsModule } from '@angular-three/soba/controls'
+import { Ng3WebxrModule } from 'ng3-webxr';
 
 
 let msalInstance: IPublicClientApplication | undefined = undefined;
@@ -92,6 +93,7 @@ export function MSALInstanceFactory(): IPublicClientApplication {
     NgtSobaOrbitControlsModule,
 
     Ng3FlatUiModule,
+    Ng3WebxrModule,
   ],
   providers: [
     {
