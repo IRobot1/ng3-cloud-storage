@@ -80,6 +80,17 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
     return fileExtension;
   }
 
+  private sizes: Array<string> = ['bytes', 'KB', 'MB', 'GB', 'TB']
+
+  private fileSize(size: number): string {
+    let index = 0;
+    while (size > 1024) {
+      index++;
+      size /= 1024;
+    }
+    return `${size.toFixed(1).replace('.0','')} ${this.sizes[index]} - `;
+  }
+
   constructor(
     private graph: OneDriveService,
     public input: FlatUIInputService,
@@ -102,6 +113,7 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
       id: item.id,
       extension: item.name ? this.getFileExtension(item.name) : '',
       lastmodified: item.lastModifiedDateTime,
+      size: item.size ? this.fileSize(item.size) : ''
     }
 
     this.driveitems.push(driveitem);

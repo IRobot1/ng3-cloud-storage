@@ -27,7 +27,7 @@ export class OneDriveService {
 
       const result = await this.authService.graphClient
         .api(path)
-        .select('id,name,folder,lastModifiedDateTime')
+        .select('id,name,folder,lastModifiedDateTime,size')
         .get();
 
       return result.value;

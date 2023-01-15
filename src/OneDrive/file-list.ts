@@ -5,6 +5,7 @@ export interface FileData {
   name: string;
   extension: string;
   lastmodified: string;
+  size: string;
 }
 
 export interface FilterData {
