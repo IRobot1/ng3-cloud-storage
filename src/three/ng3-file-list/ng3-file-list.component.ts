@@ -38,6 +38,9 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
 
   protected filterlist: Array<ListItem> = [{ text: 'All Files' }];
 
+  @Input() filterlistwidth = 1;
+  protected get filterlistheight(): number { return (this.filterlist.length * 0.11) + 0.06 }
+
   @Input() selectable?: InteractiveObjects;
 
   @Output() fileselected = new EventEmitter<string>();
