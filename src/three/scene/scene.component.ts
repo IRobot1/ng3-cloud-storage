@@ -1,6 +1,8 @@
-import { Component } from "@angular/core";
-import { InteractiveObjects } from "ng3-flat-ui";
+import { Component, ViewChild } from "@angular/core";
+import { InteractiveObjects, MenuItem } from "ng3-flat-ui";
+import { MeshBasicMaterial } from "three";
 import { FilterData } from "../../OneDrive/file-list";
+import { Ng3FileListComponent } from "../ng3-file-list/ng3-file-list.component";
 
 @Component({
   selector: 'three-scene',
@@ -8,6 +10,8 @@ import { FilterData } from "../../OneDrive/file-list";
   //styleUrls: ['./scene.component.css']
 })
 export class ThreeSceneComponent {
+  @ViewChild(Ng3FileListComponent) filelist!: Ng3FileListComponent;
+
   selectable = new InteractiveObjects();
 
   filters: Array<FilterData> = [
@@ -22,7 +26,17 @@ export class ThreeSceneComponent {
     { name: 'Audio', filter: 'ogg' },
   ]
 
+  menuitems: Array<MenuItem> = [
+    { text: 'Create Folder', keycode: '', icon: 'create_new_folder', enabled: true, color: new MeshBasicMaterial({ color: 'yellow' }), selected: () => { this.createFolder(); } },
+  //  { text: 'Create File', keycode: 'Ctrl+N', icon: 'note_add', enabled: true, selected: () => { this.createFile(); } },
+  //  { text: 'Update File', keycode: 'Ctrl+S', icon: 'save', enabled: true, selected: () => { this.updateFile(); } },
+  ]
+
   browse = true;
+
+  showprompt = false
+  prompttitle = '';
+  promptvalue = '';
 
   open(downloadurl: string) {
     console.warn('open', downloadurl);
@@ -33,4 +47,17 @@ export class ThreeSceneComponent {
       clearTimeout(timer);
     }, 2000)
   }
+
+  promptresult(result?: string) {
+    if (result) {
+      this.filelist.createFolder(result)
+    }
+  }
+
+  protected async createFolder() {
+    this.prompttitle = 'Enter folder name'
+    this.promptvalue = 'newfolder';
+    this.showprompt = true;
+  }
+
 }

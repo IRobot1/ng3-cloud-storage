@@ -4,12 +4,23 @@
 
     <ngt-point-light [position]="[0, 0, 2]"></ngt-point-light>
 
-    <ng3-file-list *ngIf="browse" [position]="[-1, 1.5, -2]" [filters]="filters" (fileselected)="open($event)" [selectable]="selectable"></ng3-file-list>
+    <ng3-file-list *ngIf="browse" [position]="[-1, 1.5, -2]" [filters]="filters" [selectable]="selectable"
+                   [addmenuitems]="menuitems"
+                   (fileselected)="open($event)" ></ng3-file-list>
 
     <ngt-soba-orbit-controls [enableRotate]="true"></ngt-soba-orbit-controls>
 
     <vr-controller guipointer showcontroller trackedpointer navhome [guis]="selectable.list"></vr-controller>
     <vr-controller [index]="1" guipointer showcontroller trackedpointer navhome [guis]="selectable.list"></vr-controller>
+
+    <!--<flat-ui-confirm *ngIf="showconfirm" [title]="textareavalue" [width]="1.5" [selectable]="selectable"
+                     [position]="popupposition" [rotation]="popuprotation" [scale]="popupscale"
+                     (result)="log('Confirm result is '+$event);showconfirm=false"></flat-ui-confirm>-->
+
+    <flat-ui-prompt *ngIf="showprompt" [title]="prompttitle" [defaultvalue]="promptvalue"
+                    [width]="1.5" [selectable]="selectable"
+                    [position]="[0, 1, -1.9]"
+                    (result)="promptresult($event);showprompt=false"></flat-ui-prompt>
 
   </ngt-canvas>
 </div>
