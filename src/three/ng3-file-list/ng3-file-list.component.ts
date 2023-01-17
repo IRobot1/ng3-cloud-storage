@@ -233,10 +233,8 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
     });
   }
 
-  protected async duplicateFile(name: string) {
-    if (!this.fileid) return;
-
-    await this.graph.duplicateFile(this.fileid, 'copy of ' + name).then(data => {
+  protected async duplicateFile(item: FileData) {
+    await this.graph.duplicateFile(item.id, 'copy of ' + item.name).then(data => {
       const timer = setTimeout(() => {
         this.refresh();
         clearTimeout(timer);
