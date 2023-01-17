@@ -6,7 +6,7 @@ import { OneDriveService } from '../../OneDrive/onedrive.service';
 import { FileData, FilterData } from '../../OneDrive/file-list';
 import { FlatUIInputService, InteractiveObjects, ListItem, MenuItem } from 'ng3-flat-ui';
 import { NgtObjectProps } from '@angular-three/core';
-import { Group, MeshBasicMaterial } from 'three';
+import { Euler, Group, Mesh, MeshBasicMaterial, Object3D, Quaternion, Vector3 } from 'three';
 
 @Component({
   selector: 'ng3-file-list',
@@ -51,6 +51,8 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
 
   @Output() fileselected = new EventEmitter<string>();
 
+  protected listobject!: Object3D;
+
   protected rowheight = 0.2;
   protected rowcount = 4;
 
@@ -63,9 +65,9 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
   protected menuitems: Array<MenuItem> = [
     { text: 'Back', keycode: 'Backspace', icon: 'arrow_back', enabled: false, selected: () => { this.back() } },
     { text: 'Refresh', keycode: 'F5', icon: 'refresh', enabled: true, selected: () => { this.refresh(); } },
-  //  { text: 'Create Folder', keycode: '', icon: 'create_new_folder', enabled: true, color: new MeshBasicMaterial({ color: 'yellow' }), selected: () => { this.createFolder(); } },
-  //  { text: 'Create File', keycode: 'Ctrl+N', icon: 'note_add', enabled: true, selected: () => { this.createFile(); } },
-  //  { text: 'Update File', keycode: 'Ctrl+S', icon: 'save', enabled: true, selected: () => { this.updateFile(); } },
+    //  { text: 'Create Folder', keycode: '', icon: 'create_new_folder', enabled: true, color: new MeshBasicMaterial({ color: 'yellow' }), selected: () => { this.createFolder(); } },
+    //  { text: 'Create File', keycode: 'Ctrl+N', icon: 'note_add', enabled: true, selected: () => { this.createFile(); } },
+    //  { text: 'Update File', keycode: 'Ctrl+S', icon: 'save', enabled: true, selected: () => { this.updateFile(); } },
   ]
   protected menuwidth = 0;
 
@@ -206,17 +208,19 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
   protected async createFile() {
     if (!this.folderid) return;
 
-    const filename = prompt('Enter file name', 'test.txt');
-    if (filename) {
-      await this.graph.createFile(this.folderid, filename, "The contents of the file goes here.").then(data => {
-        if (!data) return;
+    await this.prompt('Enter file name', 'test.txt').then(async filename => {
 
-        this.addDriveItem(data);
-        this.fileid = data.id;
+      if (filename && this.folderid) {
+        await this.graph.createFile(this.folderid, filename, "The contents of the file goes here.").then(data => {
+          if (!data) return;
 
-        this.applyfilter();
-      });
-    }
+          this.addDriveItem(data);
+          this.fileid = data.id;
+
+          this.applyfilter();
+        });
+      }
+    })
   }
 
   protected async updateFile() {
@@ -243,15 +247,16 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
   }
 
   protected async renameItem(item: FileData) {
-    const newname = prompt('Enter new name', item.name);
-    if (newname) {
-      await this.graph.renameItem(item.id, newname).then(data => {
-        if (data && data.name) {
-          item.name = data.name;
-          this.cd.detectChanges();
-        }
-      });
-    }
+    await this.prompt('Enter new name', item.name).then(async newname => {
+      if (newname) {
+        await this.graph.renameItem(item.id, newname).then(data => {
+          if (data && data.name) {
+            item.name = data.name;
+            this.cd.detectChanges();
+          }
+        });
+      }
+    })
   }
 
   private applyfilter() {
@@ -271,5 +276,54 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
       this.filter = item.filter.split(',');
       this.applyfilter();
     }
+  }
+
+
+  protected popupposition = new Vector3();
+  protected popuprotation = new Euler();
+  protected popupscale = new Vector3(1, 1, 1);
+
+  private popuptransform(object: Object3D) {
+    object.getWorldPosition(this.popupposition);
+    this.popupposition.y -= 0.35;
+    this.popupposition.z += 0.2;
+
+    const quat = new Quaternion()
+    object.getWorldQuaternion(quat);
+    this.popuprotation.setFromQuaternion(quat);
+
+  }
+
+  showconfirm = false;
+
+  confirm() {
+    this.popuptransform(this.listobject)
+    this.showconfirm = true;
+  }
+
+  showprompt = false;
+  prompttitle!: string;
+  promptvalue!: string;
+
+  protected prompt(title: string, defaultvalue: string): Promise<string | undefined> {
+    this.prompttitle = title;
+    this.promptvalue = defaultvalue;
+
+    this.popuptransform(this.listobject)
+    this.showprompt = true;
+
+    return new Promise((resolve, reject) => {
+      this.listobject.addEventListener('prompt', (e: any) => {
+        if (e)
+          resolve(e.result);
+        else
+          reject();
+      })
+    });
+  }
+
+  protected promptresult(result?: string) {
+    this.listobject.dispatchEvent({ type: 'prompt', result });
+    this.showprompt = false;
   }
 }
