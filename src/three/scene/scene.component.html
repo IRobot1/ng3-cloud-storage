@@ -24,7 +24,7 @@
     <vr-controller [index]="1" guipointer showcontroller trackedpointer navhome [guis]="selectable.list"></vr-controller>
 
     <ng3-file-list *ngIf="browse" [service]="onedrive" [position]="[-0.5, 0.5, 0]" [filters]="filters" [selectable]="selectable"
-                   [addmenuitems]="menuitems"
+                   [addmenuitems]="menuitems" [startfolderid]="projectroot"
                    (foldercreated)="log('created', $event)" (deleted)="log('deleted', $event)" (renamed)="log('renamed', $event)"
                    (fileselected)="open($event)"></ng3-file-list>
 

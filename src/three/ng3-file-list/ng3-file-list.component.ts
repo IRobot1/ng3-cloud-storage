@@ -52,6 +52,14 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
 
   @Input() selectable?: InteractiveObjects;
 
+  private folderid?: string;
+  private _startfolderid: string | undefined;
+  @Input()
+  get startfolderid(): string | undefined { return this._startfolderid }
+  set startfolderid(newvalue: string | undefined) {
+    this._startfolderid = this.folderid = newvalue;
+  }
+
   @Output() fileselected = new EventEmitter<string>();
   @Output() foldercreated = new EventEmitter<FileData>();
   @Output() deleted = new EventEmitter<FileData>();
@@ -75,7 +83,6 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
   protected menuwidth = 0;
 
   private driveitems: Array<FileData> = [];
-  private folderid?: string;
 
 
   private filter: Array<string> = [''];
@@ -116,7 +123,6 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
     if (!item.id) return;
 
     const back = this.menuitems[0];
-    //const updatefile = this.menuitems[3];
 
     if (item.isfolder) {
       this.folders.push(this.folderid);
@@ -125,13 +131,11 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
       await this.getFiles(item.id);
       this.folderid = item.id;
       this.fileid = this.downloadUrl = undefined;
-      //updatefile.enabled = false;
     }
     else {
       await this.service.getDownloadUrl(item.id).then(data => {
         this.downloadUrl = data;
         this.fileid = item.id;
-        //updatefile.enabled = true;
         if (data) this.fileselected.next(data);
       });
     }

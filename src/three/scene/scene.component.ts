@@ -18,6 +18,8 @@ export class ThreeSceneComponent {
 
   selectable = new InteractiveObjects();
 
+  projectroot = '78E12AEF1C7DC0D5!18149';
+
   filters: Array<FilterData> = [
     { name: 'All Files', filter: '' },
     { name: 'Models', filter: 'ply,glft' },
