@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 
-import { Euler, Group, Object3D, Quaternion, Vector3 } from 'three';
+import { Euler, Group, MeshBasicMaterial, Object3D, Quaternion, Vector3 } from 'three';
 
 import { FileData, FilterData, Ng3FileList } from '../../OneDrive/file-list';
 import { FlatUIInputService, InteractiveObjects, ListItem, MenuItem } from 'ng3-flat-ui';
@@ -68,7 +68,7 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
   protected menuitems: Array<MenuItem> = [
     { text: 'Back', keycode: 'Backspace', icon: 'arrow_back', enabled: false, selected: () => { this.back() } },
     { text: 'Refresh', keycode: 'F5', icon: 'refresh', enabled: true, selected: () => { this.refresh(); } },
-    //  { text: 'Create Folder', keycode: '', icon: 'create_new_folder', enabled: true, color: new MeshBasicMaterial({ color: 'yellow' }), selected: () => { this.createFolder(); } },
+    { text: 'Create Folder', keycode: '', icon: 'create_new_folder', enabled: true, color: new MeshBasicMaterial({ color: 'yellow' }), selected: () => { this.createFolder(); } },
     //  { text: 'Create File', keycode: 'Ctrl+N', icon: 'note_add', enabled: true, selected: () => { this.createFile(); } },
     //  { text: 'Update File', keycode: 'Ctrl+S', icon: 'save', enabled: true, selected: () => { this.updateFile(); } },
   ]
@@ -147,14 +147,18 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
     back.enabled = this.folders.length > 0;
   }
 
-  async createFolder(foldername: string) {
-    await this.service.createFolder(foldername, this.folderid).then(data => {
-      if (data) {
-        this.driveitems.push(data);
-        this.applyfilter();
+  protected async createFolder() {
+    await this.prompt('Enter folder name', 'newfolder').then(async foldername => {
+      if (!foldername) return;
 
-        this.foldercreated.next(data);
-      }
+      await this.service.createFolder(foldername, this.folderid).then(data => {
+        if (data) {
+          this.driveitems.push(data);
+          this.applyfilter();
+
+          this.foldercreated.next(data);
+        }
+      });
     });
   }
 

@@ -1,8 +1,6 @@
 import { Component, ViewChild } from "@angular/core";
 import { InteractiveObjects, MenuItem } from "ng3-flat-ui";
 
-import { MeshBasicMaterial } from "three";
-
 import { Ng3FileListComponent } from "../ng3-file-list/ng3-file-list.component";
 import { OneDriveService } from "../../OneDrive/onedrive.service";
 import { FileData, FilterData } from "../../OneDrive/file-list";
@@ -29,16 +27,12 @@ export class ThreeSceneComponent {
   ]
 
   menuitems: Array<MenuItem> = [
-    { text: 'Create Folder', keycode: '', icon: 'create_new_folder', enabled: true, color: new MeshBasicMaterial({ color: 'yellow' }), selected: () => { this.createFolder(); } },
+    //{ text: 'Create Folder', keycode: '', icon: 'create_new_folder', enabled: true, color: new MeshBasicMaterial({ color: 'yellow' }), selected: () => { this.createFolder(); } },
   //  { text: 'Create File', keycode: 'Ctrl+N', icon: 'note_add', enabled: true, selected: () => { this.createFile(); } },
   //  { text: 'Update File', keycode: 'Ctrl+S', icon: 'save', enabled: true, selected: () => { this.updateFile(); } },
   ]
 
   browse = true;
-
-  showprompt = false
-  prompttitle = '';
-  promptvalue = '';
 
   constructor(public onedrive: OneDriveService) { }
 
@@ -52,17 +46,21 @@ export class ThreeSceneComponent {
     }, 2000)
   }
 
-  promptresult(result?: string) {
-    if (result) {
-      this.filelist.createFolder(result)
-    }
-  }
+  //showprompt = false
+  //prompttitle = '';
+  //promptvalue = '';
 
-  protected async createFolder() {
-    this.prompttitle = 'Enter folder name'
-    this.promptvalue = 'newfolder';
-    this.showprompt = true;
-  }
+  //promptresult(result?: string) {
+  //  if (result) {
+  //    //this.filelist.createFolder(result)
+  //  }
+  //}
+
+  //protected async createFolder() {
+  //  this.prompttitle = 'Enter folder name'
+  //  this.promptvalue = 'newfolder';
+  //  this.showprompt = true;
+  //}
 
   log(type: string, data: FileData) {
     console.warn(type, data);
