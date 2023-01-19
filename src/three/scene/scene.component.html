@@ -4,7 +4,7 @@
 
     <ngt-point-light [position]="[0, 0, 2]"></ngt-point-light>
 
-    <ng3-file-list *ngIf="browse" [position]="[-1, 1.5, -2]" [filters]="filters" [selectable]="selectable"
+    <ng3-file-list *ngIf="browse" [service]="onedrive" [position]="[-1, 1.5, -2]" [filters]="filters" [selectable]="selectable"
                    [addmenuitems]="menuitems"
                    (fileselected)="open($event)" ></ng3-file-list>
 

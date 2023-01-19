@@ -1,15 +1,15 @@
-import { Component } from '@angular/core';
-import * as MicrosoftGraph from '@microsoft/microsoft-graph-types';
-import { OneDriveService } from '../OneDrive/onedrive.service';
+import { Component, Input } from '@angular/core';
 
-import { FileData, FilterData } from '../OneDrive/file-list';
+import { FileData, FilterData, Ng3FileList } from '../OneDrive/file-list';
 
 @Component({
-  selector: 'web-file-list',
+  selector: 'web-file-list[service]',
   templateUrl: './web-file-list.component.html',
   styleUrls: ['./web-file-list.component.css']
 })
 export class WebFileListComponent {
+  @Input() service!: Ng3FileList;
+
   protected filtereditems: Array<FileData> = [];
   protected fileid?: string;
   protected folders: Array<string | undefined> = [];
@@ -35,10 +35,6 @@ export class WebFileListComponent {
     return item.name
   }
 
-  constructor(
-    private graph: OneDriveService,
-  ) { }
-
   ngOnInit() {
     this.refresh();
   }
@@ -48,7 +44,7 @@ export class WebFileListComponent {
   }
 
   private async getFiles(id?: string) {
-    await this.graph.getFolderItems(id).then(data => {
+    await this.service.getFolderItems(id).then(data => {
       this.driveitems = data;
       this.applyfilter();
     });
@@ -65,7 +61,7 @@ export class WebFileListComponent {
       this.fileid = this.downloadUrl = undefined;
     }
     else {
-      await this.graph.getDownloadUrl(item.id).then(data => {
+      await this.service.getDownloadUrl(item.id).then(data => {
         this.downloadUrl = data;
         this.fileid = item.id;
       });
@@ -83,7 +79,7 @@ export class WebFileListComponent {
 
     const foldername = prompt('Enter folder name', 'newfolder');
     if (foldername) {
-      await this.graph.createFolder(foldername, this.folderid).then(data => {
+      await this.service.createFolder(foldername, this.folderid).then(data => {
         if (data) {
           this.driveitems.push(data);
         }
@@ -92,7 +88,7 @@ export class WebFileListComponent {
   }
 
   protected async deleteItem(fileid: string) {
-    await this.graph.deleteItem(fileid).then(data => {
+    await this.service.deleteItem(fileid).then(data => {
       this.driveitems = this.driveitems.filter(item => item.id != fileid);
       this.filtereditems = this.driveitems.filter(item => item.id != fileid);
       if (fileid == this.fileid) this.fileid = this.downloadUrl = undefined;
@@ -105,7 +101,7 @@ export class WebFileListComponent {
 
     const filename = prompt('Enter file name', 'test.txt');
     if (filename) {
-      await this.graph.createFile(this.folderid, filename, "The contents of the file goes here.").then(data => {
+      await this.service.createFile(this.folderid, filename, "The contents of the file goes here.").then(data => {
         if (!data) return;
 
         this.driveitems.push(data);
@@ -117,7 +113,7 @@ export class WebFileListComponent {
   protected async updateFile() {
     if (!this.fileid) return;
 
-    await this.graph.updateFile(this.fileid, "New contents: " + Date.now().toString()).then(data => {
+    await this.service.updateFile(this.fileid, "New contents: " + Date.now().toString()).then(data => {
       if (data && data.lastmodified) {
         const file = this.driveitems.find(item => item.id == this.fileid);
         if (file) {
@@ -130,7 +126,7 @@ export class WebFileListComponent {
   protected async duplicateFile(name: string) {
     if (!this.fileid) return;
 
-    await this.graph.duplicateFile(this.fileid, 'copy of ' + name).then(data => {
+    await this.service.duplicateFile(this.fileid, 'copy of ' + name).then(data => {
       const timer = setTimeout(() => {
         this.refresh();
         clearTimeout(timer);
@@ -141,7 +137,7 @@ export class WebFileListComponent {
   protected async renameItem(item: FileData) {
     const newname = prompt('Enter new name', item.name);
     if (newname) {
-      await this.graph.renameItem(item.id, newname).then(data => {
+      await this.service.renameItem(item.id, newname).then(data => {
         if (data && data.name) {
           item.name = data.name;
         }

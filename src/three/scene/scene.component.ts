@@ -1,13 +1,17 @@
 import { Component, ViewChild } from "@angular/core";
 import { InteractiveObjects, MenuItem } from "ng3-flat-ui";
+
 import { MeshBasicMaterial } from "three";
-import { FilterData } from "../../OneDrive/file-list";
+
 import { Ng3FileListComponent } from "../ng3-file-list/ng3-file-list.component";
+import { OneDriveService } from "../../OneDrive/onedrive.service";
+import { FilterData } from "../../OneDrive/file-list";
 
 @Component({
   selector: 'three-scene',
   templateUrl: './scene.component.html',
   //styleUrls: ['./scene.component.css']
+  providers: [OneDriveService],
 })
 export class ThreeSceneComponent {
   @ViewChild(Ng3FileListComponent) filelist!: Ng3FileListComponent;
@@ -37,6 +41,8 @@ export class ThreeSceneComponent {
   showprompt = false
   prompttitle = '';
   promptvalue = '';
+
+  constructor(public onedrive: OneDriveService) { }
 
   open(downloadurl: string) {
     console.warn('open', downloadurl);

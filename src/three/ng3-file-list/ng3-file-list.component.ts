@@ -1,22 +1,21 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
-import * as MicrosoftGraph from '@microsoft/microsoft-graph-types';
 
 import { Euler, Group, Object3D, Quaternion, Vector3 } from 'three';
 
-import { OneDriveService } from '../../OneDrive/onedrive.service';
-
-import { FileData, FilterData } from '../../OneDrive/file-list';
+import { FileData, FilterData, Ng3FileList } from '../../OneDrive/file-list';
 import { FlatUIInputService, InteractiveObjects, ListItem, MenuItem } from 'ng3-flat-ui';
 import { NgtObjectProps } from '@angular-three/core';
 
 @Component({
-  selector: 'ng3-file-list',
+  selector: 'ng3-file-list[service]',
   exportAs: 'Ng3FileList',
   templateUrl: './ng3-file-list.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [FlatUIInputService],
 })
 export class Ng3FileListComponent extends NgtObjectProps<Group> {
+  @Input() service!: Ng3FileList;
+
   @Input() width = 2;
 
   private _height = 1;
@@ -84,7 +83,6 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
   }
 
   constructor(
-    private graph: OneDriveService,
     public input: FlatUIInputService,
     private cd: ChangeDetectorRef,
   ) {
@@ -103,7 +101,7 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
   }
 
   private async getFiles(id?: string) {
-    await this.graph.getFolderItems(id).then(data => {
+    await this.service.getFolderItems(id).then(data => {
       this.driveitems = data;
       this.applyfilter();
     });
@@ -127,7 +125,7 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
       //updatefile.enabled = false;
     }
     else {
-      await this.graph.getDownloadUrl(item.id).then(data => {
+      await this.service.getDownloadUrl(item.id).then(data => {
         this.downloadUrl = data;
         this.fileid = item.id;
         //updatefile.enabled = true;
@@ -149,7 +147,7 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
   async createFolder(foldername: string) {
     if (!this.folderid) return;
 
-    await this.graph.createFolder(foldername, this.folderid).then(data => {
+    await this.service.createFolder(foldername, this.folderid).then(data => {
       if (data) {
         this.driveitems.push(data);
         this.applyfilter();
@@ -158,7 +156,7 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
   }
 
   protected async deleteItem(fileid: string) {
-    await this.graph.deleteItem(fileid).then(data => {
+    await this.service.deleteItem(fileid).then(data => {
       this.driveitems = this.driveitems.filter(item => item.id != fileid);
       this.filtereditems = this.driveitems.filter(item => item.id != fileid).map(item => <ListItem>{ text: item.name, data: item });
       if (fileid == this.fileid) this.fileid = this.downloadUrl = undefined;
@@ -172,7 +170,7 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
     await this.prompt('Enter file name', 'test.txt').then(async filename => {
 
       if (filename && this.folderid) {
-        await this.graph.createFile(this.folderid, filename, "The contents of the file goes here.").then(data => {
+        await this.service.createFile(this.folderid, filename, "The contents of the file goes here.").then(data => {
           if (!data) return;
 
           this.driveitems.push(data);
@@ -187,7 +185,7 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
   protected async updateFile() {
     if (!this.fileid) return;
 
-    await this.graph.updateFile(this.fileid, "New contents: " + Date.now().toString()).then(data => {
+    await this.service.updateFile(this.fileid, "New contents: " + Date.now().toString()).then(data => {
       if (data && data.lastmodified) {
         const file = this.driveitems.find(item => item.id == this.fileid);
         if (file) {
@@ -199,7 +197,7 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
   }
 
   protected async duplicateFile(item: FileData) {
-    await this.graph.duplicateFile(item.id, 'copy of ' + item.name).then(data => {
+    await this.service.duplicateFile(item.id, 'copy of ' + item.name).then(data => {
       const timer = setTimeout(() => {
         this.refresh();
         clearTimeout(timer);
@@ -210,7 +208,7 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
   protected async renameItem(item: FileData) {
     await this.prompt('Enter new name', item.name).then(async newname => {
       if (newname) {
-        await this.graph.renameItem(item.id, newname).then(data => {
+        await this.service.renameItem(item.id, newname).then(data => {
           if (data && data.name) {
             item.name = data.name;
             this.cd.detectChanges();
