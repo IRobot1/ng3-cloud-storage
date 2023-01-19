@@ -6,6 +6,7 @@
 
     <ng3-file-list *ngIf="browse" [service]="onedrive" [position]="[-1, 0.5, 0]" [filters]="filters" [selectable]="selectable"
                    [addmenuitems]="menuitems"
+                   (foldercreated)="log('created', $event)" (deleted)="log('deleted', $event)" (renamed)="log('renamed', $event)" 
                    (fileselected)="open($event)" ></ng3-file-list>
 
     <ngt-soba-orbit-controls [enableRotate]="true"></ngt-soba-orbit-controls>

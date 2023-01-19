@@ -5,12 +5,11 @@ import { MeshBasicMaterial } from "three";
 
 import { Ng3FileListComponent } from "../ng3-file-list/ng3-file-list.component";
 import { OneDriveService } from "../../OneDrive/onedrive.service";
-import { FilterData } from "../../OneDrive/file-list";
+import { FileData, FilterData } from "../../OneDrive/file-list";
 
 @Component({
   selector: 'three-scene',
   templateUrl: './scene.component.html',
-  //styleUrls: ['./scene.component.css']
 })
 export class ThreeSceneComponent {
   @ViewChild(Ng3FileListComponent) filelist!: Ng3FileListComponent;
@@ -65,4 +64,7 @@ export class ThreeSceneComponent {
     this.showprompt = true;
   }
 
+  log(type: string, data: FileData) {
+    console.warn(type, data);
+  }
 }

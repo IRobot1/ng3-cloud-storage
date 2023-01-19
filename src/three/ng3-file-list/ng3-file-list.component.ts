@@ -50,6 +50,9 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
   @Input() selectable?: InteractiveObjects;
 
   @Output() fileselected = new EventEmitter<string>();
+  @Output() foldercreated = new EventEmitter<FileData>();
+  @Output() deleted = new EventEmitter<FileData>();
+  @Output() renamed = new EventEmitter<FileData>();
 
   protected listobject!: Object3D;
 
@@ -149,16 +152,22 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
       if (data) {
         this.driveitems.push(data);
         this.applyfilter();
+
+        this.foldercreated.next(data);
       }
     });
   }
 
-  protected async deleteItem(fileid: string) {
+  protected async deleteItem(item: FileData) {
+    const fileid = item.id;
     await this.service.deleteItem(fileid).then(data => {
       this.driveitems = this.driveitems.filter(item => item.id != fileid);
       this.filtereditems = this.driveitems.filter(item => item.id != fileid).map(item => <ListItem>{ text: item.name, data: item });
+
       if (fileid == this.fileid) this.fileid = this.downloadUrl = undefined;
       if (fileid == this.folderid) this.folderid = undefined;
+
+      this.deleted.next(item);
     });
   }
 
@@ -210,6 +219,8 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
           if (data && data.name) {
             item.name = data.name;
             this.cd.detectChanges();
+
+            this.renamed.next(item);
           }
         });
       }

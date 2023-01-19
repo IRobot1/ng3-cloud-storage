@@ -27,7 +27,7 @@
             <flat-ui-menu-mini [visible]="data.visible" [position]="[width/2-0.4, -0.04, 0]" [selectable]="selectable" [stoppropagation]="false">
               <flat-ui-menu-item [text]="'Rename'" [icon]="'drive_file_rename_outline'" (pressed)="renameItem(data)"></flat-ui-menu-item>
               <flat-ui-menu-item *ngIf="!data.isfolder" [text]="'Duplicate File'" [icon]="'file_copy'" (pressed)="duplicateFile(data)"></flat-ui-menu-item>
-              <flat-ui-menu-item [text]="'Delete'" [icon]="'delete'" (pressed)="deleteItem(data.id)"></flat-ui-menu-item>
+              <flat-ui-menu-item [text]="'Delete'" [icon]="'delete'" (pressed)="deleteItem(data)"></flat-ui-menu-item>
             </flat-ui-menu-mini>
 
           </ng-template>
