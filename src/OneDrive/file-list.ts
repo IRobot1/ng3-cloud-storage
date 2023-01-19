@@ -18,7 +18,7 @@ export interface Ng3FileList {
   getFolderItems(itemid: string | undefined): Promise<FileData[]>;
   getDownloadUrl(itemid: string): Promise<string | undefined>;
 
-  createFolder(foldername: string, folderid: string): Promise<FileData | undefined>;
+  createFolder(foldername: string, folderid: string | undefined): Promise<FileData | undefined>;
   createFile(folderid: string, filename: string, content: string): Promise<FileData | undefined>;
 
   updateFile(itemid: string, content: string): Promise<FileData | undefined>;

@@ -28,7 +28,7 @@ export class OneDriveService implements Ng3FileList {
     return driveitems;
   }
 
-  public async createFolder(foldername: string, folderid: string): Promise<FileData | undefined> {
+  public async createFolder(foldername: string, folderid: string | undefined): Promise<FileData | undefined> {
     let result: FileData | undefined = undefined;
 
     await this._createFolder(foldername, folderid).then(data => {
@@ -138,7 +138,7 @@ export class OneDriveService implements Ng3FileList {
 
   private async _createFolder(
     name: string,
-    parentid: string,
+    parentid: string | undefined,
   ): Promise<MicrosoftGraph.DriveItem | undefined> {
     const driveItem = {
       name,
@@ -152,8 +152,11 @@ export class OneDriveService implements Ng3FileList {
     }
 
     try {
+      let path = `/me/drive/root/children`
+      if (parentid) path = `/me/drive/items/${parentid}/children`
+
       const result = await this.authService.graphClient
-        .api(`/me/drive/items/${parentid}/children`)
+        .api(path)
         .post(driveItem);
 
       return result;

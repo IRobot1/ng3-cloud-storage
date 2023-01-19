@@ -4,7 +4,7 @@
 
     <ngt-point-light [position]="[0, 0, 2]"></ngt-point-light>
 
-    <ng3-file-list *ngIf="browse" [service]="onedrive" [position]="[-1, 1.5, -2]" [filters]="filters" [selectable]="selectable"
+    <ng3-file-list *ngIf="browse" [service]="onedrive" [position]="[-1, 0.5, 0]" [filters]="filters" [selectable]="selectable"
                    [addmenuitems]="menuitems"
                    (fileselected)="open($event)" ></ng3-file-list>
 
@@ -19,7 +19,7 @@
 
     <flat-ui-prompt *ngIf="showprompt" [title]="prompttitle" [defaultvalue]="promptvalue"
                     [width]="1.5" [selectable]="selectable"
-                    [position]="[0, 1, -1.9]"
+                    [position]="[0, 0, 0.1]"
                     (result)="promptresult($event);showprompt=false"></flat-ui-prompt>
 
   </ngt-canvas>

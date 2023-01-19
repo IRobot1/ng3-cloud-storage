@@ -145,8 +145,6 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
   }
 
   async createFolder(foldername: string) {
-    if (!this.folderid) return;
-
     await this.service.createFolder(foldername, this.folderid).then(data => {
       if (data) {
         this.driveitems.push(data);

@@ -75,13 +75,12 @@ export class WebFileListComponent {
   }
 
   protected async createFolder() {
-    if (!this.folderid) return;
-
     const foldername = prompt('Enter folder name', 'newfolder');
     if (foldername) {
       await this.service.createFolder(foldername, this.folderid).then(data => {
         if (data) {
           this.driveitems.push(data);
+          this.applyfilter();
         }
       });
     }
