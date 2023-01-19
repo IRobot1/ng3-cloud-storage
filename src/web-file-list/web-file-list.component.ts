@@ -35,15 +35,6 @@ export class WebFileListComponent {
     return item.name
   }
 
-  private getFileExtension(name: string) {
-    const re: RegExp = /(?:\.([^.]+))?$/;
-    const result = re.exec(name);
-    if (!result) return '';
-
-    const fileExtension = result[1] || '';
-    return fileExtension;
-  }
-
   constructor(
     private graph: OneDriveService,
   ) { }
@@ -52,35 +43,14 @@ export class WebFileListComponent {
     this.refresh();
   }
 
-  private addDriveItem(item: MicrosoftGraph.DriveItem) {
-    const driveitem = <FileData>{
-      isfolder: item.folder != undefined,
-      name: item.name,
-      id: item.id,
-      extension: item.name ? this.getFileExtension(item.name) : '',
-      lastmodified: item.lastModifiedDateTime,
-    }
-
-    this.driveitems.push(driveitem);
-
-    if (this.filter[0] == '' || driveitem.isfolder || this.filter.includes(driveitem.extension)) {
-      this.filtereditems.push(driveitem);
-    }
-  }
-
   protected async refresh() {
     await this.getFiles(this.folderid);
   }
 
   private async getFiles(id?: string) {
     await this.graph.getFolderItems(id).then(data => {
-      if (!data) return
-
-      this.driveitems.length = this.filtereditems.length = 0;
-      data.forEach(item => {
-        if (!item.name?.startsWith('.'))
-          this.addDriveItem(item);
-      });
+      this.driveitems = data;
+      this.applyfilter();
     });
   }
 
@@ -115,7 +85,7 @@ export class WebFileListComponent {
     if (foldername) {
       await this.graph.createFolder(foldername, this.folderid).then(data => {
         if (data) {
-          this.addDriveItem(data);
+          this.driveitems.push(data);
         }
       });
     }
@@ -138,7 +108,7 @@ export class WebFileListComponent {
       await this.graph.createFile(this.folderid, filename, "The contents of the file goes here.").then(data => {
         if (!data) return;
 
-        this.addDriveItem(data);
+        this.driveitems.push(data);
         this.fileid = data.id;
       });
     }
@@ -148,10 +118,10 @@ export class WebFileListComponent {
     if (!this.fileid) return;
 
     await this.graph.updateFile(this.fileid, "New contents: " + Date.now().toString()).then(data => {
-      if (data && data.lastModifiedDateTime) {
+      if (data && data.lastmodified) {
         const file = this.driveitems.find(item => item.id == this.fileid);
         if (file) {
-          file.lastmodified = data.lastModifiedDateTime;
+          file.lastmodified = data.lastmodified;
         }
       }
     });

@@ -12,3 +12,19 @@ export interface FilterData {
   name: string,
   filter: string,
 }
+
+
+export interface Ng3FileList {
+  getFolderItems(itemid: string | undefined): Promise<FileData[]>;
+  getDownloadUrl(itemid: string): Promise<string | undefined>;
+
+  createFolder(foldername: string, folderid: string): Promise<FileData | undefined>;
+  createFile(folderid: string, filename: string, content: string): Promise<FileData | undefined>;
+
+  updateFile(itemid: string, content: string): Promise<FileData | undefined>;
+  renameItem(itemid: string, newname: string): Promise<FileData | undefined>;
+
+  deleteItem(fileid: string): Promise<number | undefined>;
+
+  duplicateFile(itemid: string, dupname: string): Promise<undefined>;
+}

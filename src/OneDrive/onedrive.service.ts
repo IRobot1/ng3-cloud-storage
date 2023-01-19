@@ -3,17 +3,118 @@ import * as MicrosoftGraph from '@microsoft/microsoft-graph-types';
 
 import { AuthService } from './auth.service';
 
+import { FileData, Ng3FileList } from './file-list';
+
 @Injectable({
   providedIn: 'root',
 })
-export class OneDriveService {
+export class OneDriveService implements Ng3FileList {
   constructor(
     private authService: AuthService,
   ) { }
 
+
+  public async getFolderItems(itemid: string | undefined): Promise<FileData[]> {
+    const driveitems: Array<FileData> = [];
+
+    await this._getFolderItems(itemid).then(data => {
+      if (!data) return;
+
+      data.forEach(item => {
+        if (!item.name?.startsWith('.'))
+          driveitems.push(this.addDriveItem(item));
+      });
+
+    });
+
+    return driveitems;
+  }
+
+  public async createFolder(foldername: string, folderid: string): Promise<FileData | undefined> {
+    let result: FileData | undefined = undefined;
+
+    await this._createFolder(foldername, folderid).then(data => {
+      if (!data) { result = undefined; return }
+
+      result = this.addDriveItem(data);
+    });
+
+    return result;
+  }
+
+  public async createFile(folderid: string, filename: string, content: string): Promise<FileData | undefined> {
+    let result: FileData | undefined = undefined;
+
+    await this._createFile(folderid, filename, content).then(data => {
+      if (!data) { result = undefined; return }
+
+      result = this.addDriveItem(data);
+    });
+
+    return result;
+  }
+
+  public async updateFile(itemid: string, content: string): Promise<FileData | undefined> {
+    let result: FileData | undefined = undefined;
+
+    await this._updateFile(itemid, content).then(data => {
+      if (!data) { result = undefined; return }
+
+      result = this.addDriveItem(data);
+    });
+
+    return result;
+  }
+
+  public async renameItem(itemid: string, newname: string): Promise<FileData | undefined> {
+    let result: FileData | undefined = undefined;
+
+    await this._renameItem(itemid, newname).then(data => {
+      if (!data) { result = undefined; return }
+
+      result = this.addDriveItem(data);
+    });
+
+    return result;
+  }
+
+
+
   // https://learn.microsoft.com/en-us/graph/api/resources/onedrive?view=graph-rest-1.0
 
-  async getFolderItems(
+  private getFileExtension(name: string) {
+    const re: RegExp = /(?:\.([^.]+))?$/;
+    const result = re.exec(name);
+    if (!result) return '';
+
+    const fileExtension = result[1] || '';
+    return fileExtension;
+  }
+
+  private sizes: Array<string> = ['bytes', 'KB', 'MB', 'GB', 'TB']
+
+  private fileSize(size: number): string {
+    let index = 0;
+    while (size > 1024) {
+      index++;
+      size /= 1024;
+    }
+    return `${size.toFixed(1).replace('.0', '')} ${this.sizes[index]} - `;
+  }
+
+
+  private addDriveItem(item: MicrosoftGraph.DriveItem): FileData {
+    return <FileData>{
+      isfolder: item.folder != undefined,
+      name: item.name,
+      id: item.id,
+      extension: item.name ? this.getFileExtension(item.name) : '',
+      lastmodified: item.lastModifiedDateTime,
+      size: item.size ? this.fileSize(item.size) : ''
+    }
+  }
+
+  private async _getFolderItems(
     itemid?: string,
   ): Promise<MicrosoftGraph.DriveItem[] | undefined> {
     if (!this.authService.graphClient) {
@@ -37,7 +138,7 @@ export class OneDriveService {
     return undefined;
   }
 
-  async createFolder(
+  private async _createFolder(
     name: string,
     parentid: string,
   ): Promise<MicrosoftGraph.DriveItem | undefined> {
@@ -104,7 +205,7 @@ export class OneDriveService {
     return undefined;
   }
 
-  async createFile(
+  private async _createFile(
     parentid: string, // parent folder
     name: string,
     content: string,
@@ -126,7 +227,7 @@ export class OneDriveService {
     return undefined;
   }
 
-  async updateFile(
+  private async _updateFile(
     itemid: string,
     content: string,
   ): Promise<MicrosoftGraph.DriveItem | undefined> {
@@ -161,7 +262,7 @@ export class OneDriveService {
       .post({ name: dupname });
   }
 
-  async renameItem(
+  private async _renameItem(
     itemid: string,
     newname: string,
   ): Promise<MicrosoftGraph.DriveItem | undefined> {

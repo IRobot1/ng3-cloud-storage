@@ -75,7 +75,7 @@ export class OneDriveComponent {
     this.authService.handleRedirects().subscribe({
       next: async (result: AuthenticationResult) => {
         if (this.authenticated) {
-          this.refresh();
+          //this.refresh();
         }
       },
       error: (error: any) => {
@@ -92,141 +92,141 @@ export class OneDriveComponent {
     this.authService.signOut();
   }
 
-  private addDriveItem(item: MicrosoftGraph.DriveItem) {
-    const driveitem = <FileData>{
-      isfolder: item.folder != undefined,
-      name: item.name,
-      id: item.id,
-      extension: item.name ? this.getFileExtension(item.name) : '',
-      lastmodified: item.lastModifiedDateTime,
-    }
+//  private addDriveItem(item: MicrosoftGraph.DriveItem) {
+//    const driveitem = <FileData>{
+//      isfolder: item.folder != undefined,
+//      name: item.name,
+//      id: item.id,
+//      extension: item.namSe ? this.getFileExtension(item.name) : '',
+//      lastmodified: item.lastModifiedDateTime,
+//    }
 
-    this.driveitems.push(driveitem);
+//    this.driveitems.push(driveitem);
 
-    if (this.filter[0] == '' || driveitem.isfolder || this.filter.includes(driveitem.extension)) {
-      this.filtereditems.push(driveitem);
-    }
-  }
+//    if (this.filter[0] == '' || driveitem.isfolder || this.filter.includes(driveitem.extension)) {
+//      this.filtereditems.push(driveitem);
+//    }
+//  }
 
-  async refresh() {
-    await this.getFiles(this.folderid);
-  }
+//  async refresh() {
+//    await this.getFiles(this.folderid);
+//  }
 
-  async getFiles(id?: string) {
-    await this.graph.getFolderItems(id).then(data => {
-      if (!data) return
+//  async getFiles(id?: string) {
+//    await this.graph.getFolderItems(id).then(data => {
+//      if (!data) return
 
-      this.driveitems.length = this.filtereditems.length = 0;
-      data.forEach(item => {
-        if (!item.name?.startsWith('.'))
-          this.addDriveItem(item);
-      });
-    });
-  }
+//      this.driveitems.length = this.filtereditems.length = 0;
+//      data.forEach(item => {
+//        if (!item.name?.startsWith('.'))
+//          this.addDriveItem(item);
+//      });
+//    });
+//  }
 
-  downloadUrl?: string;
+//  downloadUrl?: string;
 
-  async open(item: FileData) {
-    if (!item.id) return;
-    if (item.isfolder) {
-      this.folders.push(this.folderid);
-      await this.getFiles(item.id);
-      this.folderid = item.id;
-      this.fileid = this.downloadUrl = undefined;
-    }
-    else {
-      await this.graph.getDownloadUrl(item.id).then(data => {
-        this.downloadUrl = data;
-        this.fileid = item.id;
-      });
-    }
-  }
+//  async open(item: FileData) {
+//    if (!item.id) return;
+//    if (item.isfolder) {
+//      this.folders.push(this.folderid);
+//      await this.getFiles(item.id);
+//      this.folderid = item.id;
+//      this.fileid = this.downloadUrl = undefined;
+//    }
+//    else {
+//      await this.graph.getDownloadUrl(item.id).then(data => {
+//        this.downloadUrl = data;
+//        this.fileid = item.id;
+//      });
+//    }
+//  }
 
-  async up() {
-    this.fileid = this.downloadUrl = undefined;
-    this.folderid = this.folders.pop();
-    await this.getFiles(this.folderid);
-  }
+//  async up() {
+//    this.fileid = this.downloadUrl = undefined;
+//    this.folderid = this.folders.pop();
+//    await this.getFiles(this.folderid);
+//  }
 
-  async createFolder() {
-    if (!this.folderid) return;
+//  async createFolder() {
+//    if (!this.folderid) return;
 
-    const foldername = prompt('Enter folder name', 'newfolder');
-    if (foldername) {
-      await this.graph.createFolder(foldername, this.folderid).then(data => {
-        if (data) {
-          this.addDriveItem(data);
-        }
-      });
-    }
-  }
+//    const foldername = prompt('Enter folder name', 'newfolder');
+//    if (foldername) {
+//      await this.graph.createFolder(foldername, this.folderid).then(data => {
+//        if (data) {
+//          this.addDriveItem(data);
+//        }
+//      });
+//    }
+//  }
 
-  async deleteItem(fileid: string) {
-    await this.graph.deleteItem(fileid).then(data => {
-      this.driveitems = this.driveitems.filter(item => item.id != fileid);
-      this.filtereditems = this.driveitems.filter(item => item.id != fileid);
-      if (fileid == this.fileid) this.fileid = this.downloadUrl = undefined;
-      if (fileid == this.folderid) this.folderid = undefined;
-    });
-  }
+//  async deleteItem(fileid: string) {
+//    await this.graph.deleteItem(fileid).then(data => {
+//      this.driveitems = this.driveitems.filter(item => item.id != fileid);
+//      this.filtereditems = this.driveitems.filter(item => item.id != fileid);
+//      if (fileid == this.fileid) this.fileid = this.downloadUrl = undefined;
+//      if (fileid == this.folderid) this.folderid = undefined;
+//    });
+//  }
 
-  async createFile() {
-    if (!this.folderid) return;
+//  async createFile() {
+//    if (!this.folderid) return;
 
-    const filename = prompt('Enter file name', 'test.txt');
-    if (filename) {
-      await this.graph.createFile(this.folderid, filename, "The contents of the file goes here.").then(data => {
-        if (!data) return;
+//    const filename = prompt('Enter file name', 'test.txt');
+//    if (filename) {
+//      await this.graph.createFile(this.folderid, filename, "The contents of the file goes here.").then(data => {
+//        if (!data) return;
 
-        this.addDriveItem(data);
-        this.fileid = data.id;
-      });
-    }
-  }
+//        this.addDriveItem(data);
+//        this.fileid = data.id;
+//      });
+//    }
+//  }
 
-  async updateFile() {
-    if (!this.fileid) return;
+//  async updateFile() {
+//    if (!this.fileid) return;
 
-    await this.graph.updateFile(this.fileid, "New contents: " + Date.now().toString()).then(data => {
-      if (data && data.lastModifiedDateTime) {
-        const file = this.driveitems.find(item => item.id == this.fileid);
-        if (file) {
-          file.lastmodified = data.lastModifiedDateTime;
-        }
-      }
-    });
-  }
+//    await this.graph.updateFile(this.fileid, "New contents: " + Date.now().toString()).then(data => {
+//      if (data && data.lastModifiedDateTime) {
+//        const file = this.driveitems.find(item => item.id == this.fileid);
+//        if (file) {
+//          file.lastmodified = data.lastModifiedDateTime;
+//        }
+//      }
+//    });
+//  }
 
-  async duplicateFile(name: string) {
-    if (!this.fileid) return;
+//  async duplicateFile(name: string) {
+//    if (!this.fileid) return;
 
-    await this.graph.duplicateFile(this.fileid, 'copy of ' + name).then(data => {
-      const timer = setTimeout(() => {
-        this.refresh();
-        clearTimeout(timer);
-      }, 1000)
-    });
-  }
+//    await this.graph.duplicateFile(this.fileid, 'copy of ' + name).then(data => {
+//      const timer = setTimeout(() => {
+//        this.refresh();
+//        clearTimeout(timer);
+//      }, 1000)
+//    });
+//  }
 
-  async renameItem(item: FileData) {
-    const newname = prompt('Enter new name', item.name);
-    if (newname) {
-      await this.graph.renameItem(item.id, newname).then(data => {
-        if (data && data.name) {
-          item.name = data.name;
-        }
-      });
-    }
-  }
+//  async renameItem(item: FileData) {
+//    const newname = prompt('Enter new name', item.name);
+//    if (newname) {
+//      await this.graph.renameItem(item.id, newname).then(data => {
+//        if (data && data.name) {
+//          item.name = data.name;
+//        }
+//      });
+//    }
+//  }
 
-  applyfilter() {
-    this.filtereditems = this.driveitems.filter(item => {
-      return this.filter[0] == '' || item.isfolder || this.filter.includes(item.extension)
-    });
-  }
+//  applyfilter() {
+//    this.filtereditems = this.driveitems.filter(item => {
+//      return this.filter[0] == '' || item.isfolder || this.filter.includes(item.extension)
+//    });
+//  }
 
-  changeFilter(newfilter: string) {
-    this.filter = newfilter.split(',');
-    this.applyfilter();
-  }
+//  changeFilter(newfilter: string) {
+//    this.filter = newfilter.split(',');
+//    this.applyfilter();
+//  }
 }

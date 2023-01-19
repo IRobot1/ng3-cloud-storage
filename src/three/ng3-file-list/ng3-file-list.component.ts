@@ -1,12 +1,13 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import * as MicrosoftGraph from '@microsoft/microsoft-graph-types';
 
+import { Euler, Group, Object3D, Quaternion, Vector3 } from 'three';
+
 import { OneDriveService } from '../../OneDrive/onedrive.service';
 
 import { FileData, FilterData } from '../../OneDrive/file-list';
 import { FlatUIInputService, InteractiveObjects, ListItem, MenuItem } from 'ng3-flat-ui';
 import { NgtObjectProps } from '@angular-three/core';
-import { Euler, Group, Mesh, MeshBasicMaterial, Object3D, Quaternion, Vector3 } from 'three';
 
 @Component({
   selector: 'ng3-file-list',
@@ -82,26 +83,6 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
     return item.name
   }
 
-  private getFileExtension(name: string) {
-    const re: RegExp = /(?:\.([^.]+))?$/;
-    const result = re.exec(name);
-    if (!result) return '';
-
-    const fileExtension = result[1] || '';
-    return fileExtension;
-  }
-
-  private sizes: Array<string> = ['bytes', 'KB', 'MB', 'GB', 'TB']
-
-  private fileSize(size: number): string {
-    let index = 0;
-    while (size > 1024) {
-      index++;
-      size /= 1024;
-    }
-    return `${size.toFixed(1).replace('.0', '')} ${this.sizes[index]} - `;
-  }
-
   constructor(
     private graph: OneDriveService,
     public input: FlatUIInputService,
@@ -117,40 +98,20 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
 
   }
 
-  private addDriveItem(item: MicrosoftGraph.DriveItem) {
-    const driveitem = <FileData>{
-      isfolder: item.folder != undefined,
-      name: item.name,
-      id: item.id,
-      extension: item.name ? this.getFileExtension(item.name) : '',
-      lastmodified: item.lastModifiedDateTime,
-      size: item.size ? this.fileSize(item.size) : ''
-    }
-
-    this.driveitems.push(driveitem);
-
-  }
-
   protected async refresh() {
     await this.getFiles(this.folderid);
   }
 
   private async getFiles(id?: string) {
     await this.graph.getFolderItems(id).then(data => {
-      if (!data) return
-
-      this.driveitems.length = 0;
-      data.forEach(item => {
-        if (!item.name?.startsWith('.'))
-          this.addDriveItem(item);
-      });
+      this.driveitems = data;
       this.applyfilter();
     });
   }
 
   protected downloadUrl?: string;
 
-  protected async open(item: FileData) {
+  protected async openFile(item: FileData) {
     if (!item.id) return;
 
     const back = this.menuitems[0];
@@ -190,7 +151,7 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
 
     await this.graph.createFolder(foldername, this.folderid).then(data => {
       if (data) {
-        this.addDriveItem(data);
+        this.driveitems.push(data);
         this.applyfilter();
       }
     });
@@ -214,7 +175,7 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
         await this.graph.createFile(this.folderid, filename, "The contents of the file goes here.").then(data => {
           if (!data) return;
 
-          this.addDriveItem(data);
+          this.driveitems.push(data);
           this.fileid = data.id;
 
           this.applyfilter();
@@ -227,10 +188,10 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
     if (!this.fileid) return;
 
     await this.graph.updateFile(this.fileid, "New contents: " + Date.now().toString()).then(data => {
-      if (data && data.lastModifiedDateTime) {
+      if (data && data.lastmodified) {
         const file = this.driveitems.find(item => item.id == this.fileid);
         if (file) {
-          file.lastmodified = data.lastModifiedDateTime;
+          file.lastmodified = data.lastmodified;
           this.cd.detectChanges();
         }
       }

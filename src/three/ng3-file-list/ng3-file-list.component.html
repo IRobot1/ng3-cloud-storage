@@ -14,7 +14,7 @@
 
     <ng-template #listItem let-list="list" let-text="text" let-width="width" let-data="data" let-index="index" let-parent="parent">
       <ngt-group *ngIf="data" [appendTo]="parent">
-        <flat-ui-base-button [selectable]="selectable" [text]="text" [width]="width" [height]="rowheight" (hover)="data.visible=$event" (pressed)="open(data)">
+        <flat-ui-base-button [selectable]="selectable" [text]="text" [width]="width" [height]="rowheight" (hover)="data.visible=$event" (pressed)="openFile(data)">
           <ng-template #button let-parent="parent">
             <ngt-group [appendTo]="parent">
 
