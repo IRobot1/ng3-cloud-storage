@@ -5,9 +5,7 @@ import { AuthService } from './auth.service';
 
 import { FileData, Ng3FileList } from './file-list';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class OneDriveService implements Ng3FileList {
   constructor(
     private authService: AuthService,

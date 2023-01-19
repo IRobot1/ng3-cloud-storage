@@ -7,7 +7,8 @@ import { OneDriveService } from './onedrive.service';
 @Component({
   selector: 'app-onedrive',
   templateUrl: './onedrive.component.html',
-  styleUrls: ['./onedrive.component.css']
+  styleUrls: ['./onedrive.component.css'],
+  providers: [OneDriveService],
 })
 export class OneDriveComponent {
   get authenticated(): boolean {

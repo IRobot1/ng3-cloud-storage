@@ -11,7 +11,6 @@ import { FilterData } from "../../OneDrive/file-list";
   selector: 'three-scene',
   templateUrl: './scene.component.html',
   //styleUrls: ['./scene.component.css']
-  providers: [OneDriveService],
 })
 export class ThreeSceneComponent {
   @ViewChild(Ng3FileListComponent) filelist!: Ng3FileListComponent;
