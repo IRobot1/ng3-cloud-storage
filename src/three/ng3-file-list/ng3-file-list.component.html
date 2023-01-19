@@ -4,7 +4,7 @@
 <ngt-group [name]="name" [visible]="visible" [position]="position" [rotation]="rotation" [scale]="scale">
   <flat-ui-menu-mini #menu [menuitems]="menuitems" [selectable]="selectable"></flat-ui-menu-mini>
 
-  <flat-ui-select #select [text]="filtervalue" [position]="[menu.width+filterlistwidth/2, 0, 0]" [selectable]="selectable"
+  <flat-ui-select *ngIf="filters.length>1" #select [text]="filtervalue" [position]="[menu.width+filterlistwidth/2, 0, 0]" [selectable]="selectable"
                   [width]="filterlistwidth"
                   (change)="changeFilter($event)" (openinput)="input.openlist($event, select, filterlist, filtervalue)">
   </flat-ui-select>
