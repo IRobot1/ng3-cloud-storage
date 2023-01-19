@@ -4,24 +4,38 @@
 
     <ngt-point-light [position]="[0, 0, 2]"></ngt-point-light>
 
-    <ng3-file-list *ngIf="browse" [service]="onedrive" [position]="[-1, 0.5, 0]" [filters]="filters" [selectable]="selectable"
-                   [addmenuitems]="menuitems"
-                   (foldercreated)="log('created', $event)" (deleted)="log('deleted', $event)" (renamed)="log('renamed', $event)" 
-                   (fileselected)="open($event)" ></ng3-file-list>
+    <ngt-mesh [position]="[-1, -0.25, 0]">
+      <ngt-cylinder-geometry [args]="[0.25, 0.25, 0.5, 20]"></ngt-cylinder-geometry>
+      <ngt-mesh-basic-material color="gray"></ngt-mesh-basic-material>
+    </ngt-mesh>
+
+    <ngt-mesh [position]="[-1, height+0.001, 0]" [geometry]="geometry">
+      <ngt-mesh-basic-material color="red"></ngt-mesh-basic-material>
+    </ngt-mesh>
+
+
+    <flat-ui-menu-mini [position]="[-1, -0.5, 0.5]" [selectable]="selectable">
+      <flat-ui-menu-item [text]="'Load'" [icon]="'file_open'" (pressed)="selectfile()"></flat-ui-menu-item>
+    </flat-ui-menu-mini>
 
     <ngt-soba-orbit-controls [enableRotate]="true"></ngt-soba-orbit-controls>
 
     <vr-controller guipointer showcontroller trackedpointer navhome [guis]="selectable.list"></vr-controller>
     <vr-controller [index]="1" guipointer showcontroller trackedpointer navhome [guis]="selectable.list"></vr-controller>
 
-    <!--<flat-ui-confirm *ngIf="showconfirm" [title]="textareavalue" [width]="1.5" [selectable]="selectable"
-                     [position]="popupposition" [rotation]="popuprotation" [scale]="popupscale"
-                     (result)="log('Confirm result is '+$event);showconfirm=false"></flat-ui-confirm>-->
+    <ng3-file-list *ngIf="browse" [service]="onedrive" [position]="[-0.5, 0.5, 0]" [filters]="filters" [selectable]="selectable"
+                   [addmenuitems]="menuitems"
+                   (foldercreated)="log('created', $event)" (deleted)="log('deleted', $event)" (renamed)="log('renamed', $event)"
+                   (fileselected)="open($event)"></ng3-file-list>
 
+
+    <!--<flat-ui-confirm *ngIf="showconfirm" [title]="textareavalue" [width]="1.5" [selectable]="selectable"
+                   [position]="popupposition" [rotation]="popuprotation" [scale]="popupscale"
+                   (result)="log('Confirm result is '+$event);showconfirm=false"></flat-ui-confirm>-->
     <!--<flat-ui-prompt *ngIf="showprompt" [title]="prompttitle" [defaultvalue]="promptvalue"
-                    [width]="1.5" [selectable]="selectable"
-                    [position]="[0, 0, 0.1]"
-                    (result)="promptresult($event);showprompt=false"></flat-ui-prompt>-->
+                  [width]="1.5" [selectable]="selectable"
+                  [position]="[0, 0, 0.1]"
+                  (result)="promptresult($event);showprompt=false"></flat-ui-prompt>-->
 
   </ngt-canvas>
 </div>

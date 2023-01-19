@@ -5,6 +5,10 @@ import { Ng3FileListComponent } from "../ng3-file-list/ng3-file-list.component";
 import { OneDriveService } from "../../OneDrive/onedrive.service";
 import { FileData, FilterData } from "../../OneDrive/file-list";
 
+import { PLYLoader } from 'three-stdlib';
+import { NgtLoader } from "@angular-three/core";
+import { BufferGeometry } from "three";
+
 @Component({
   selector: 'three-scene',
   templateUrl: './scene.component.html',
@@ -28,39 +32,40 @@ export class ThreeSceneComponent {
 
   menuitems: Array<MenuItem> = [
     //{ text: 'Create Folder', keycode: '', icon: 'create_new_folder', enabled: true, color: new MeshBasicMaterial({ color: 'yellow' }), selected: () => { this.createFolder(); } },
-  //  { text: 'Create File', keycode: 'Ctrl+N', icon: 'note_add', enabled: true, selected: () => { this.createFile(); } },
-  //  { text: 'Update File', keycode: 'Ctrl+S', icon: 'save', enabled: true, selected: () => { this.updateFile(); } },
+    //  { text: 'Create File', keycode: 'Ctrl+N', icon: 'note_add', enabled: true, selected: () => { this.createFile(); } },
+    //  { text: 'Update File', keycode: 'Ctrl+S', icon: 'save', enabled: true, selected: () => { this.updateFile(); } },
   ]
 
-  browse = true;
+  browse = false;
+  geometry!: BufferGeometry;
+  height = 0;
 
-  constructor(public onedrive: OneDriveService) { }
+  constructor(
+    public onedrive: OneDriveService,
+    private loader: NgtLoader,
+  ) { }
 
-  open(downloadurl: string) {
-    console.warn('open', downloadurl);
-    this.browse = false;
-
-    const timer = setTimeout(() => {
-      this.browse = true;
-      clearTimeout(timer);
-    }, 2000)
+  selectfile() {
+    this.filters = [{ name: 'Models', filter: 'ply' }]
+    this.browse = true;
   }
 
-  //showprompt = false
-  //prompttitle = '';
-  //promptvalue = '';
+  open(downloadurl: string) {
+    this.browse = false;
 
-  //promptresult(result?: string) {
-  //  if (result) {
-  //    //this.filelist.createFolder(result)
-  //  }
-  //}
+    const s = this.loader.use(PLYLoader, downloadurl).subscribe(next => {
+      next.center();
+      if (next.boundingBox)
+        this.height = (next.boundingBox.max.y - next.boundingBox.min.y) / 2;
 
-  //protected async createFolder() {
-  //  this.prompttitle = 'Enter folder name'
-  //  this.promptvalue = 'newfolder';
-  //  this.showprompt = true;
-  //}
+      if (this.geometry) this.geometry.dispose();
+      this.geometry = next;
+    },
+      () => { },
+      () => { s.unsubscribe(); }
+    );
+
+  }
 
   log(type: string, data: FileData) {
     console.warn(type, data);

@@ -35,8 +35,11 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
   set filters(newvalue: Array<FilterData>) {
     this._filters = newvalue;
     this.filterlist = this.filters.map(item => <ListItem>{ text: this.displayfilter(item) });
+    this.filtervalue = this.filterlist[0].text;
   }
 
+  protected filtereditems: Array<ListItem> = [];
+  protected filtervalue = 'All Files';
   protected filterlist: Array<ListItem> = [{ text: 'All Files' }];
 
   @Input() filterlistwidth = 1;
@@ -58,9 +61,6 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
 
   protected rowheight = 0.2;
   protected rowcount = 4;
-
-  protected filtereditems: Array<ListItem> = [];
-  protected filtervalue = 'All Files';
 
   protected fileid?: string;
   protected folders: Array<string | undefined> = [];

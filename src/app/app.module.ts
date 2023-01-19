@@ -29,7 +29,7 @@ import { NgtCanvasModule } from '@angular-three/core';
 import { NgtColorAttributeModule } from '@angular-three/core/attributes';
 import { NgtPointLightModule } from '@angular-three/core/lights';
 import { NgtMeshModule } from '@angular-three/core/meshes';
-import { NgtBoxGeometryModule } from '@angular-three/core/geometries';
+import { NgtBoxGeometryModule, NgtCylinderGeometryModule } from '@angular-three/core/geometries';
 import { NgtMeshBasicMaterialModule } from '@angular-three/core/materials';
 import { ThreeSceneComponent } from '../three/scene/scene.component';
 import { Ng3FlatUiModule } from 'ng3-flat-ui';
@@ -88,6 +88,7 @@ export function MSALInstanceFactory(): IPublicClientApplication {
     NgtMeshModule,
     NgtGroupModule,
     NgtBoxGeometryModule,
+    NgtCylinderGeometryModule,
     NgtMeshBasicMaterialModule,
 
     NgtSobaOrbitControlsModule,
