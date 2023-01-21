@@ -17,7 +17,7 @@
 
     <flat-ui-menu-mini [position]="[-1, -0.5, 0.5]" [selectable]="selectable">
       <flat-ui-menu-item [enabled]="!browse" [text]="'Project Folder'" [icon]="'home_work'" (pressed)="changeproject()"></flat-ui-menu-item>
-      <flat-ui-menu-item [text]="browse ? 'Close' : 'Load'" [icon]="browse ? 'close' : 'file_open'" (pressed)="loadfile()"></flat-ui-menu-item>
+      <flat-ui-menu-item [text]="!browse ? 'Load' : 'Close'" [icon]="!browse ? 'file_open' : 'close'" (pressed)="!browse ? loadfile() : close()"></flat-ui-menu-item>
       <flat-ui-menu-item [enabled]="filename != undefined" [text]="'Save'" [icon]="'save'" (pressed)="savefile(model.instance.value)"></flat-ui-menu-item>
       <flat-ui-menu-item [text]="'Save As'" [icon]="'save_as'" (pressed)="saveasfile(model.instance.value)"></flat-ui-menu-item>
     </flat-ui-menu-mini>
@@ -27,9 +27,9 @@
     <vr-controller guipointer showcontroller trackedpointer navhome [guis]="selectable.list"></vr-controller>
     <vr-controller [index]="1" guipointer showcontroller trackedpointer navhome [guis]="selectable.list"></vr-controller>
 
-    <ng3-file-list *ngIf="browse" [service]="onedrive" [height]="browseheight" [position]="[-0.5, 0.5, 0]" [filters]="filters" [selectable]="selectable"
+    <ng3-file-list [visible]="browse" [service]="onedrive" [height]="browseheight" [position]="[-0.5, 0.5, 0]" [filters]="filters" [selectable]="selectable"
                    [addmenuitems]="menuitems" [startfolderid]="!selectfolder ? projectroot : undefined" [selectfolder]="selectfolder"
-                   [savefile]="saveparams" (saved)="log('saved', $event);filename=$event.name;saveparams=undefined" (close)="selectfolder=browse=false"
+                   [savefile]="saveparams" (saved)="log('saved', $event);filename=$event.name;saveparams=undefined" (close)="close()"
                    (foldercreated)="log('created', $event)" (deleted)="log('deleted', $event)" (renamed)="log('renamed', $event)"
                    (fileselected)="open($event)" (folderselected)="folderselected($event)"></ng3-file-list>
 

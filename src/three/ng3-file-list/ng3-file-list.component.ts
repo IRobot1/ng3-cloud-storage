@@ -13,6 +13,11 @@ export interface SaveFile {
   content: string,
 }
 
+export interface FileSelected {
+  item: FileData;
+  downloadUrl: string;
+}
+
 @Component({
   selector: 'ng3-file-list[service]',
   exportAs: 'Ng3FileList',
@@ -42,7 +47,8 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
   set filters(newvalue: Array<FilterData>) {
     this._filters = newvalue;
     this.filterlist = this.filters.map(item => <ListItem>{ text: this.displayfilter(item) });
-    this.changeFilter(this.filterlist[0].text);
+    if (this.filterlist.length > 0)
+      this.changeFilter(this.filterlist[0].text);
   }
 
   protected filtereditems: Array<ListItem> = [];
@@ -60,11 +66,12 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
   @Input() selectable?: InteractiveObjects;
 
   private folderid?: string;
-  private _startfolderid: string | undefined;
   @Input()
-  get startfolderid(): string | undefined { return this._startfolderid }
+  get startfolderid(): string | undefined { return this.folderid }
   set startfolderid(newvalue: string | undefined) {
-    this._startfolderid = this.folderid = newvalue;
+    this.folderid = newvalue;
+    this.resetback();
+    this.refresh();
   }
 
   @Input() selectfolder = false;
@@ -79,7 +86,7 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
     this.createFilePrompt(newvalue.prompttitle, newvalue.promptvalue, newvalue.content, newvalue.conflictBehavior);
   }
 
-  @Output() fileselected = new EventEmitter<string>();
+  @Output() fileselected = new EventEmitter<FileSelected>();
   @Output() folderselected = new EventEmitter<FileData>();
   @Output() foldercreated = new EventEmitter<FileData>();
   @Output() deleted = new EventEmitter<FileData>();
@@ -93,10 +100,10 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
   protected rowcount = 4;
 
   protected fileid?: string;
-  protected folders: Array<string | undefined> = [];
+  protected backfolderids: Array<string | undefined> = [];
 
   protected menuitems: Array<MenuItem> = [
-    { text: 'Back', keycode: 'Backspace', icon: 'arrow_back', enabled: false, selected: () => { this.back() } },
+    { text: 'Back', keycode: 'Backspace', icon: 'arrow_back', enabled: false, selected: () => { this.moveback() } },
     { text: 'Refresh', keycode: 'F5', icon: 'refresh', enabled: true, selected: () => { this.refresh(); } },
     { text: 'Create Folder', keycode: '', icon: 'create_new_folder', enabled: true, color: new MeshBasicMaterial({ color: 'yellow' }), selected: () => { this.createFolder(); } },
     //  { text: 'Create File', keycode: 'Ctrl+N', icon: 'note_add', enabled: true, selected: () => { this.createFile(); } },
@@ -121,13 +128,6 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
     super();
   }
 
-  override ngOnInit() {
-    super.ngOnInit();
-
-    this.refresh();
-
-  }
-
   protected async refresh() {
     await this.getFiles(this.folderid);
   }
@@ -142,13 +142,11 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
   protected downloadUrl?: string;
 
   protected async openFile(item: FileData) {
-    if (!item.id) return;
-
-    const back = this.menuitems[0];
+    if (!item.id || !this.visible) return;
 
     if (item.isfolder) {
-      this.folders.push(this.folderid);
-      back.enabled = true;
+      this.backfolderids.push(this.folderid);
+      this.back.enabled = true;
 
       await this.getFiles(item.id);
       this.folderid = item.id;
@@ -162,23 +160,35 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
         await this.service.getDownloadUrl(item.id).then(data => {
           this.downloadUrl = data;
           this.fileid = item.id;
-          if (data) this.fileselected.next(data);
+          if (data) {
+            this.fileselected.next({ item, downloadUrl: data });
+          }
         });
       }
     }
     this.cd.detectChanges();
   }
 
-  protected async back() {
+  private get back(): MenuItem { return this.menuitems[0] }
+  private resetback() {
+    this.backfolderids.length = 0;
+    this.back.enabled = false;
+    this.cd.detectChanges();
+  }
+
+  protected async moveback() {
+    if (!this.visible) return;
+
     this.fileid = this.downloadUrl = undefined;
-    this.folderid = this.folders.pop();
+    this.folderid = this.backfolderids.pop();
     await this.getFiles(this.folderid);
 
-    const back = this.menuitems[0];
-    back.enabled = this.folders.length > 0;
+    this.back.enabled = this.backfolderids.length > 0;
   }
 
   protected async createFolder() {
+    if (!this.visible) return;
+
     await this.prompt('Enter folder name', 'newfolder').then(async foldername => {
       if (!foldername) return;
 
@@ -194,6 +204,8 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
   }
 
   protected async deleteItem(item: FileData) {
+    if (!this.visible) return;
+
     const fileid = item.id;
     await this.service.deleteItem(fileid).then(data => {
       this.driveitems = this.driveitems.filter(item => item.id != fileid);
@@ -209,15 +221,17 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
   private async createFile(filename: string, content: string, conflictBehaivor: ConflictBehavior, folderid?: string) {
     await this.service.createFile(folderid, filename, content, conflictBehaivor).then(data => {
       if (!data) return;
-
-      this.driveitems.push(data);
       this.fileid = data.id;
+
       this.saved.next(data);
       this.close.next();
+
+      this.refresh();
     });
   }
 
   public async createFilePrompt(title: string, defaultfile: string, content: string, conflictBehaivor: ConflictBehavior) {
+    if (!this.visible) return;
 
     await this.prompt(title, defaultfile).then(async filename => {
 
@@ -228,21 +242,9 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
     })
   }
 
-  protected async updateFile() {
-    if (!this.fileid) return;
-
-    await this.service.updateFile(this.fileid, "New contents: " + Date.now().toString()).then(data => {
-      if (data && data.lastmodified) {
-        const file = this.driveitems.find(item => item.id == this.fileid);
-        if (file) {
-          file.lastmodified = data.lastmodified;
-          this.cd.detectChanges();
-        }
-      }
-    });
-  }
-
   protected async duplicateFile(item: FileData) {
+    if (!this.visible) return;
+
     await this.service.duplicateFile(item.id, 'copy of ' + item.name).then(data => {
       const timer = setTimeout(() => {
         this.refresh();
@@ -252,6 +254,8 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
   }
 
   protected async renameItem(item: FileData) {
+    if (!this.visible) return;
+
     await this.prompt('Enter new name', item.name).then(async newname => {
       if (newname) {
         await this.service.renameItem(item.id, newname).then(data => {
@@ -275,6 +279,7 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
   }
 
   protected changeFilter(newfilter: string) {
+    if (!this.visible) return;
     if (newfilter == this.filtervalue) return;
 
     this.filtervalue = newfilter;
@@ -296,7 +301,7 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
   prompttitle!: string;
   promptvalue!: string;
 
-  protected prompt(title: string, defaultvalue: string): Promise<string | undefined> {
+  private prompt(title: string, defaultvalue: string): Promise<string | undefined> {
     this.prompttitle = title;
     this.promptvalue = defaultvalue;
     this.showprompt = true;

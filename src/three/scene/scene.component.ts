@@ -1,7 +1,7 @@
 import { Component, ViewChild } from "@angular/core";
 import { InteractiveObjects, MenuItem } from "ng3-flat-ui";
 
-import { Ng3FileListComponent, SaveFile } from "../ng3-file-list/ng3-file-list.component";
+import { FileSelected, Ng3FileListComponent, SaveFile } from "../ng3-file-list/ng3-file-list.component";
 import { OneDriveService } from "../../OneDrive/onedrive.service";
 import { FileData, FilterData } from "../../OneDrive/file-list";
 
@@ -63,10 +63,10 @@ export class ThreeSceneComponent {
     this.selectfolder = false;
   }
 
-  open(downloadurl: string) {
+  open(file: FileSelected) {
     this.browse = false;
 
-    const s = this.loader.use(PLYLoader, downloadurl).subscribe(next => {
+    const s = this.loader.use(PLYLoader, file.downloadUrl).subscribe(next => {
       next.center();
       if (next.boundingBox)
         this.meshheight = (next.boundingBox.max.y - next.boundingBox.min.y) / 2;
@@ -78,6 +78,7 @@ export class ThreeSceneComponent {
       () => { s.unsubscribe(); }
     );
 
+    this.filename = file.item.name;
   }
 
   log(type: string, data: FileData) {
@@ -99,7 +100,7 @@ export class ThreeSceneComponent {
     // wait for browser to open
     const timer = setTimeout(() => {
       this.saveparams = {
-        prompttitle: 'Enter file name', promptvalue: 'file.ply',
+        prompttitle: 'Enter file name', promptvalue: this.filename ? 'copy of ' + this.filename : 'file.ply',
         content: this.getContent(object), conflictBehavior: 'replace'
       }
       //this.saveparams = {
@@ -124,5 +125,9 @@ export class ThreeSceneComponent {
     if (item.isfolder) this.projectroot = item.id;
     this.filename = undefined;
     this.selectfolder = this.browse = false;
+  }
+
+  close() {
+    this.selectfolder = this.browse = false
   }
 }
