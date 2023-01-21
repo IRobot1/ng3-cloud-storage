@@ -102,11 +102,14 @@ export class OneDriveService implements Ng3FileList {
 
 
   private addDriveItem(item: MicrosoftGraph.DriveItem): FileData {
+    let extension = item.name ? this.getFileExtension(item.name) : '';
+    if (item.folder) extension = 'folder';
+
     return <FileData>{
       isfolder: item.folder != undefined,
       name: item.name,
       id: item.id,
-      extension: item.name ? this.getFileExtension(item.name) : '',
+      extension,
       lastmodified: item.lastModifiedDateTime,
       size: item.size ? this.fileSize(item.size) : ''
     }

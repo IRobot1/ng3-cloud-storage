@@ -41,6 +41,7 @@ export class ThreeSceneComponent {
   browse = false;
   geometry!: BufferGeometry;
   height = 0;
+  selectfolder = false;
 
   constructor(
     public onedrive: OneDriveService,
@@ -48,7 +49,10 @@ export class ThreeSceneComponent {
   ) { }
 
   selectfile() {
-    this.filters = [{ name: 'Models', filter: 'ply' }]
+    this.filters = [
+      //{ name: 'Select Folder', filter: 'folder' },
+      { name: 'Models', filter: 'ply' },
+    ]
     this.browse = true;
   }
 

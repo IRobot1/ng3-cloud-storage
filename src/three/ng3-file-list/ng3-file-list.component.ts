@@ -35,7 +35,7 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
   set filters(newvalue: Array<FilterData>) {
     this._filters = newvalue;
     this.filterlist = this.filters.map(item => <ListItem>{ text: this.displayfilter(item) });
-    this.filtervalue = this.filterlist[0].text;
+    this.changeFilter(this.filterlist[0].text);
   }
 
   protected filtereditems: Array<ListItem> = [];
@@ -60,7 +60,10 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
     this._startfolderid = this.folderid = newvalue;
   }
 
+  @Input() selectfolder = false;
+
   @Output() fileselected = new EventEmitter<string>();
+  @Output() folderselected = new EventEmitter<FileData>();
   @Output() foldercreated = new EventEmitter<FileData>();
   @Output() deleted = new EventEmitter<FileData>();
   @Output() renamed = new EventEmitter<FileData>();
@@ -113,7 +116,7 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
   private async getFiles(id?: string) {
     await this.service.getFolderItems(id).then(data => {
       this.driveitems = data;
-      this.applyfilter();
+      this.applyFilter();
     });
   }
 
@@ -158,7 +161,7 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
       await this.service.createFolder(foldername, this.folderid).then(data => {
         if (data) {
           this.driveitems.push(data);
-          this.applyfilter();
+          this.applyFilter();
 
           this.foldercreated.next(data);
         }
@@ -191,7 +194,7 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
           this.driveitems.push(data);
           this.fileid = data.id;
 
-          this.applyfilter();
+          this.applyFilter();
         });
       }
     })
@@ -235,7 +238,7 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
     })
   }
 
-  private applyfilter() {
+  private applyFilter() {
     const driveitems = this.driveitems.filter(item => {
       return this.filter[0] == '' || item.isfolder || this.filter.includes(item.extension)
     });
@@ -250,7 +253,7 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
     const item = this.filters.find(item => newfilter.startsWith(item.name));
     if (item) {
       this.filter = item.filter.split(',');
-      this.applyfilter();
+      this.applyFilter();
     }
   }
 
