@@ -156,11 +156,16 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
       this.fileid = this.downloadUrl = undefined;
     }
     else {
-      await this.service.getDownloadUrl(item.id).then(data => {
-        this.downloadUrl = data;
-        this.fileid = item.id;
-        if (data) this.fileselected.next(data);
-      });
+      if (this.showprompt) {
+        this.promptvalue = item.name;
+      }
+      else {
+        await this.service.getDownloadUrl(item.id).then(data => {
+          this.downloadUrl = data;
+          this.fileid = item.id;
+          if (data) this.fileselected.next(data);
+        });
+      }
     }
     this.cd.detectChanges();
   }
