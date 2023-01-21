@@ -9,13 +9,14 @@
       <ngt-mesh-basic-material color="gray"></ngt-mesh-basic-material>
     </ngt-mesh>
 
-    <ngt-mesh [position]="[-1, height+0.001, 0]" [geometry]="geometry">
+    <ngt-mesh [position]="[-1, meshheight+0.001, 0]" [geometry]="geometry">
       <ngt-mesh-basic-material color="red"></ngt-mesh-basic-material>
     </ngt-mesh>
 
 
     <flat-ui-menu-mini [position]="[-1, -0.5, 0.5]" [selectable]="selectable">
       <flat-ui-menu-item [text]="'Load'" [icon]="'file_open'" (pressed)="selectfile()"></flat-ui-menu-item>
+      <flat-ui-menu-item [text]="'Save'" [icon]="'save'" (pressed)="savefile()"></flat-ui-menu-item>
     </flat-ui-menu-mini>
 
     <ngt-soba-orbit-controls [enableRotate]="true"></ngt-soba-orbit-controls>
@@ -23,8 +24,9 @@
     <vr-controller guipointer showcontroller trackedpointer navhome [guis]="selectable.list"></vr-controller>
     <vr-controller [index]="1" guipointer showcontroller trackedpointer navhome [guis]="selectable.list"></vr-controller>
 
-    <ng3-file-list *ngIf="browse" [service]="onedrive" [position]="[-0.5, 0.5, 0]" [filters]="filters" [selectable]="selectable"
+    <ng3-file-list *ngIf="browse" [service]="onedrive" [height]="browseheight" [position]="[-0.5, 0.5, 0]" [filters]="filters" [selectable]="selectable"
                    [addmenuitems]="menuitems" [startfolderid]="projectroot" [selectfolder]="selectfolder"
+                   [savefile]="saveparams" (saved)="log('saved', $event)" (close)="browse=false"
                    (foldercreated)="log('created', $event)" (deleted)="log('deleted', $event)" (renamed)="log('renamed', $event)"
                    (fileselected)="open($event)" (folderselected)="log('folder', $event);browse=false"></ng3-file-list>
 

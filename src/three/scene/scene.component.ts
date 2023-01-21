@@ -1,7 +1,7 @@
 import { Component, ViewChild } from "@angular/core";
 import { InteractiveObjects, MenuItem } from "ng3-flat-ui";
 
-import { Ng3FileListComponent } from "../ng3-file-list/ng3-file-list.component";
+import { Ng3FileListComponent, SaveFile } from "../ng3-file-list/ng3-file-list.component";
 import { OneDriveService } from "../../OneDrive/onedrive.service";
 import { FileData, FilterData } from "../../OneDrive/file-list";
 
@@ -39,8 +39,10 @@ export class ThreeSceneComponent {
   ]
 
   browse = false;
+  browseheight = 1.5;
+
   geometry!: BufferGeometry;
-  height = 0;
+  meshheight = 0;
   selectfolder = false;
 
   constructor(
@@ -62,7 +64,7 @@ export class ThreeSceneComponent {
     const s = this.loader.use(PLYLoader, downloadurl).subscribe(next => {
       next.center();
       if (next.boundingBox)
-        this.height = (next.boundingBox.max.y - next.boundingBox.min.y) / 2;
+        this.meshheight = (next.boundingBox.max.y - next.boundingBox.min.y) / 2;
 
       if (this.geometry) this.geometry.dispose();
       this.geometry = next;
@@ -75,5 +77,29 @@ export class ThreeSceneComponent {
 
   log(type: string, data: FileData) {
     console.warn(type, data);
+  }
+
+  saveparams?: SaveFile;
+  prompt = true;
+
+  savefile() {
+    if (this.prompt) {
+      this.browse = true;
+
+      // wait for browser to open
+      const timer = setTimeout(() => {
+        this.saveparams = {
+          prompttitle: 'Enter file name', promptvalue: 'file.ply',
+          content: 'Text content', conflictBehavior: 'replace'
+        }
+        //this.saveparams = {
+        //  filename: 'file.ply', content: 'Text content'
+        //}
+        clearTimeout(timer);
+      }, 1000 / 60)
+    }
+    else {
+      this.onedrive.createFile(this.projectroot, 'file.ply', 'File content');
+    }
   }
 }

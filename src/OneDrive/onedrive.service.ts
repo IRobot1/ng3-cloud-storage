@@ -3,7 +3,7 @@ import * as MicrosoftGraph from '@microsoft/microsoft-graph-types';
 
 import { AuthService } from './auth.service';
 
-import { FileData, Ng3FileList } from './file-list';
+import { ConflictBehavior, FileData, Ng3FileList } from './file-list';
 
 @Injectable()
 export class OneDriveService implements Ng3FileList {
@@ -40,7 +40,7 @@ export class OneDriveService implements Ng3FileList {
     return result;
   }
 
-  public async createFile(folderid: string, filename: string, content: string): Promise<FileData | undefined> {
+  public async createFile(folderid: string | undefined, filename: string, content: string): Promise<FileData | undefined> {
     let result: FileData | undefined = undefined;
 
     await this._createFile(folderid, filename, content).then(data => {
@@ -210,9 +210,10 @@ export class OneDriveService implements Ng3FileList {
   }
 
   private async _createFile(
-    parentid: string, // parent folder
+    parentid: string | undefined, // parent folder
     name: string,
     content: string,
+    conflictBehavior: ConflictBehavior = 'replace'
   ): Promise<MicrosoftGraph.DriveItem | undefined> {
     if (!this.authService.graphClient) {
       console.error('Graph client is not initialized.');
@@ -220,8 +221,11 @@ export class OneDriveService implements Ng3FileList {
     }
 
     try {
+      let id = parentid
+      if (!id) id = 'root';
+
       const result = await this.authService.graphClient
-        .api(`/me/drive/items/${parentid}:/${name}:/content?@microsoft.graph.conflictBehavior=rename`)
+        .api(`/me/drive/items/${id}:/${name}:/content?@microsoft.graph.conflictBehavior=${conflictBehavior}`)
         .put(content)
 
       return result;

@@ -2,9 +2,16 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, In
 
 import { Euler, Group, MeshBasicMaterial, Object3D, Quaternion, Vector3 } from 'three';
 
-import { FileData, FilterData, Ng3FileList } from '../../OneDrive/file-list';
+import { ConflictBehavior, FileData, FilterData, Ng3FileList } from '../../OneDrive/file-list';
 import { FlatUIInputService, InteractiveObjects, ListItem, MenuItem } from 'ng3-flat-ui';
 import { NgtObjectProps } from '@angular-three/core';
+
+export interface SaveFile {
+  prompttitle: string,
+  promptvalue: string,
+  conflictBehavior: ConflictBehavior,
+  content: string,
+}
 
 @Component({
   selector: 'ng3-file-list[service]',
@@ -62,11 +69,24 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
 
   @Input() selectfolder = false;
 
+  private _savefile!: SaveFile;
+  @Input()
+  get savefile(): SaveFile { return this._savefile }
+  set savefile(newvalue: SaveFile | undefined) {
+    console.warn('savefile', newvalue)
+    if (!newvalue || !this.listobject) return;
+
+    this._savefile = newvalue;
+    this.createFilePrompt(newvalue.prompttitle, newvalue.promptvalue, newvalue.content, newvalue.conflictBehavior);
+  }
+
   @Output() fileselected = new EventEmitter<string>();
   @Output() folderselected = new EventEmitter<FileData>();
   @Output() foldercreated = new EventEmitter<FileData>();
   @Output() deleted = new EventEmitter<FileData>();
   @Output() renamed = new EventEmitter<FileData>();
+  @Output() saved = new EventEmitter<FileData>();
+  @Output() close = new EventEmitter<void>();
 
   protected listobject!: Object3D;
 
@@ -182,21 +202,25 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
     });
   }
 
-  protected async createFile() {
-    if (!this.folderid) return;
+  private async createFile(filename: string, content: string, conflictBehaivor: ConflictBehavior, folderid?: string) {
+    await this.service.createFile(folderid, filename, content, conflictBehaivor).then(data => {
+      if (!data) return;
 
-    await this.prompt('Enter file name', 'test.txt').then(async filename => {
+      this.driveitems.push(data);
+      this.fileid = data.id;
+      this.saved.next(data);
+      this.close.next();
+    });
+  }
 
-      if (filename && this.folderid) {
-        await this.service.createFile(this.folderid, filename, "The contents of the file goes here.").then(data => {
-          if (!data) return;
+  public async createFilePrompt(title: string, defaultfile: string, content: string, conflictBehaivor: ConflictBehavior) {
 
-          this.driveitems.push(data);
-          this.fileid = data.id;
+    await this.prompt(title, defaultfile).then(async filename => {
 
-          this.applyFilter();
-        });
+      if (filename) {
+        await this.createFile(filename, content, conflictBehaivor, this.folderid);
       }
+      this.close.next();
     })
   }
 
@@ -264,8 +288,8 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
 
   private popuptransform(object: Object3D) {
     object.getWorldPosition(this.popupposition);
-    this.popupposition.y -= 0.35;
-    this.popupposition.z += 0.2;
+    this.popupposition.y -= this.height/2+0.2;
+    this.popupposition.z += 0.01;
 
     const quat = new Quaternion()
     object.getWorldQuaternion(quat);

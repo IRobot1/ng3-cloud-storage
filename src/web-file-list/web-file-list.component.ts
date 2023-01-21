@@ -100,7 +100,7 @@ export class WebFileListComponent {
 
     const filename = prompt('Enter file name', 'test.txt');
     if (filename) {
-      await this.service.createFile(this.folderid, filename, "The contents of the file goes here.").then(data => {
+      await this.service.createFile(this.folderid, filename, "The contents of the file goes here.", 'rename').then(data => {
         if (!data) return;
 
         this.driveitems.push(data);
