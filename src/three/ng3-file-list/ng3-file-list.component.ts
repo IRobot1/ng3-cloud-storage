@@ -1,6 +1,6 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, Output } from '@angular/core';
 
-import { Euler, Group, MeshBasicMaterial, Object3D, Quaternion, Vector3 } from 'three';
+import { Group, MeshBasicMaterial, Object3D } from 'three';
 
 import { ConflictBehavior, FileData, FilterData, Ng3FileList } from '../../OneDrive/file-list';
 import { FlatUIInputService, InteractiveObjects, ListItem, MenuItem } from 'ng3-flat-ui';
@@ -282,25 +282,9 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
   }
 
 
-  protected popupposition = new Vector3();
-  protected popuprotation = new Euler();
-  protected popupscale = new Vector3(1, 1, 1);
-
-  private popuptransform(object: Object3D) {
-    object.getWorldPosition(this.popupposition);
-    this.popupposition.y -= this.height/2+0.2;
-    this.popupposition.z += 0.01;
-
-    const quat = new Quaternion()
-    object.getWorldQuaternion(quat);
-    this.popuprotation.setFromQuaternion(quat);
-
-  }
-
   showconfirm = false;
 
   confirm() {
-    this.popuptransform(this.listobject)
     this.showconfirm = true;
   }
 
@@ -311,8 +295,6 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
   protected prompt(title: string, defaultvalue: string): Promise<string | undefined> {
     this.prompttitle = title;
     this.promptvalue = defaultvalue;
-
-    this.popuptransform(this.listobject)
     this.showprompt = true;
 
     return new Promise((resolve, reject) => {

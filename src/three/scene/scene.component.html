@@ -28,7 +28,7 @@
 
     <ng3-file-list *ngIf="browse" [service]="onedrive" [height]="browseheight" [position]="[-0.5, 0.5, 0]" [filters]="filters" [selectable]="selectable"
                    [addmenuitems]="menuitems" [startfolderid]="projectroot" [selectfolder]="selectfolder"
-                   [savefile]="saveparams" (saved)="log('saved', $event);filename=$event.name" (close)="browse=false"
+                   [savefile]="saveparams" (saved)="log('saved', $event);filename=$event.name;saveparams=undefined" (close)="browse=false"
                    (foldercreated)="log('created', $event)" (deleted)="log('deleted', $event)" (renamed)="log('renamed', $event)"
                    (fileselected)="open($event)" (folderselected)="log('folder', $event);browse=false"></ng3-file-list>
 
