@@ -5,9 +5,9 @@ import { Ng3FileListComponent, SaveFile } from "../ng3-file-list/ng3-file-list.c
 import { OneDriveService } from "../../OneDrive/onedrive.service";
 import { FileData, FilterData } from "../../OneDrive/file-list";
 
-import { PLYLoader } from 'three-stdlib';
+import { PLYLoader, PLYExporter } from 'three-stdlib';
 import { NgtLoader } from "@angular-three/core";
-import { BufferGeometry } from "three";
+import { BufferGeometry, Object3D } from "three";
 
 @Component({
   selector: 'three-scene',
@@ -39,10 +39,10 @@ export class ThreeSceneComponent {
   ]
 
   browse = false;
-  browseheight = 1.5;
+  browseheight = 1;
 
   geometry!: BufferGeometry;
-  meshheight = 0;
+  meshheight = 0.05;
   selectfolder = false;
 
   constructor(
@@ -55,7 +55,7 @@ export class ThreeSceneComponent {
       //{ name: 'Select Folder', filter: 'folder' },
       { name: 'Models', filter: 'ply' },
     ]
-    this.browse = true;
+    this.browse = !this.browse;
   }
 
   open(downloadurl: string) {
@@ -80,26 +80,33 @@ export class ThreeSceneComponent {
   }
 
   saveparams?: SaveFile;
-  prompt = true;
+  filename?: string;
 
-  savefile() {
-    if (this.prompt) {
-      this.browse = true;
+  private getContent(object: Object3D): string {
+    const exporter = new PLYExporter();
+    return <string>exporter.parse(object, undefined, {});
+  }
 
-      // wait for browser to open
-      const timer = setTimeout(() => {
-        this.saveparams = {
-          prompttitle: 'Enter file name', promptvalue: 'file.ply',
-          content: 'Text content', conflictBehavior: 'replace'
-        }
-        //this.saveparams = {
-        //  filename: 'file.ply', content: 'Text content'
-        //}
-        clearTimeout(timer);
-      }, 1000 / 60)
-    }
-    else {
-      this.onedrive.createFile(this.projectroot, 'file.ply', 'File content');
+  saveasfile(object: Object3D) {
+    this.browse = true;
+
+    // wait for browser to open
+    const timer = setTimeout(() => {
+      this.saveparams = {
+        prompttitle: 'Enter file name', promptvalue: 'file.ply',
+        content: this.getContent(object), conflictBehavior: 'replace'
+      }
+      //this.saveparams = {
+      //  filename: 'file.ply', content: 'Text content'
+      //}
+      clearTimeout(timer);
+    }, 1000 / 60)
+  }
+
+  savefile(mesh: Object3D) {
+    if (this.filename) {
+      this.onedrive.createFile(this.projectroot, this.filename, this.getContent(mesh));
     }
   }
+
 }
