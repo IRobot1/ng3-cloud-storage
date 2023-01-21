@@ -73,7 +73,6 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
   @Input()
   get savefile(): SaveFile { return this._savefile }
   set savefile(newvalue: SaveFile | undefined) {
-    console.warn('savefile', newvalue)
     if (!newvalue || !this.listobject) return;
 
     this._savefile = newvalue;

@@ -18,19 +18,26 @@ export class ThreeSceneComponent {
 
   selectable = new InteractiveObjects();
 
-  projectroot = '78E12AEF1C7DC0D5!18149';
+  projectroot?: string
 
   filters: Array<FilterData> = [
-    { name: 'All Files', filter: '' },
-    { name: 'Models', filter: 'ply,glft' },
-    { name: 'Textures', filter: 'png,jpg' },
-    { name: 'Images', filter: 'png,jpg' },
-    { name: 'SVG', filter: 'svg' },
-    { name: 'Materials', filter: 'json' },
-    { name: 'Fonts', filter: 'json' },
-    { name: 'Animation Clips', filter: 'json' },
-    { name: 'Audio', filter: 'ogg' },
+    //  { name: 'All Files', filter: '' },
+    //  { name: 'Models', filter: 'ply,glft' },
+    //  { name: 'Textures', filter: 'png,jpg' },
+    //  { name: 'Images', filter: 'png,jpg' },
+    //  { name: 'SVG', filter: 'svg' },
+    //  { name: 'Materials', filter: 'json' },
+    //  { name: 'Fonts', filter: 'json' },
+    //  { name: 'Animation Clips', filter: 'json' },
+    //  { name: 'Audio', filter: 'ogg' },
   ]
+  foldersfilter = [
+    { name: 'Select Folder', filter: 'folder' },
+  ]
+  modelsfilter = [
+    { name: 'Models', filter: 'ply' },
+  ]
+
 
   menuitems: Array<MenuItem> = [
     //{ text: 'Create Folder', keycode: '', icon: 'create_new_folder', enabled: true, color: new MeshBasicMaterial({ color: 'yellow' }), selected: () => { this.createFolder(); } },
@@ -50,12 +57,10 @@ export class ThreeSceneComponent {
     private loader: NgtLoader,
   ) { }
 
-  selectfile() {
-    this.filters = [
-      //{ name: 'Select Folder', filter: 'folder' },
-      { name: 'Models', filter: 'ply' },
-    ]
+  loadfile() {
+    this.filters = this.modelsfilter;
     this.browse = !this.browse;
+    this.selectfolder = false;
   }
 
   open(downloadurl: string) {
@@ -88,6 +93,7 @@ export class ThreeSceneComponent {
   }
 
   saveasfile(object: Object3D) {
+    this.filters = this.modelsfilter;
     this.browse = true;
 
     // wait for browser to open
@@ -109,4 +115,14 @@ export class ThreeSceneComponent {
     }
   }
 
+  changeproject() {
+    this.filters = this.foldersfilter;
+    this.selectfolder = this.browse = true;
+  }
+
+  folderselected(item: FileData) {
+    if (item.isfolder) this.projectroot = item.id;
+    this.filename = undefined;
+    this.selectfolder = this.browse = false;
+  }
 }
