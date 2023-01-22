@@ -9,14 +9,18 @@ import { PLYLoader, PLYExporter } from 'three-stdlib';
 import { NgtLoader } from "@angular-three/core";
 import { BufferGeometry, Object3D } from "three";
 
+import { CookieService } from 'ngx-cookie-service';
+
 @Component({
   selector: 'three-scene',
   templateUrl: './scene.component.html',
+  providers: [CookieService]
 })
 export class ThreeSceneComponent {
   @ViewChild(Ng3FileListComponent) filelist!: Ng3FileListComponent;
 
   selectable = new InteractiveObjects();
+  z = 0;
 
   projectroot?: string
 
@@ -55,7 +59,10 @@ export class ThreeSceneComponent {
   constructor(
     public onedrive: OneDriveService,
     private loader: NgtLoader,
-  ) { }
+    private cookie: CookieService,
+  ) {
+    this.projectroot = this.cookie.get('projectroot');
+  }
 
   loadfile() {
     this.filters = this.modelsfilter;
@@ -122,9 +129,10 @@ export class ThreeSceneComponent {
   }
 
   folderselected(item: FileData) {
-    if (item.isfolder) this.projectroot = item.id;
+    this.projectroot = item.id;
     this.filename = undefined;
     this.selectfolder = this.browse = false;
+    this.cookie.set('projectroot', this.projectroot);
   }
 
   close() {
