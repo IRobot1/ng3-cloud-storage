@@ -206,15 +206,19 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
   protected async deleteItem(item: FileData) {
     if (!this.visible) return;
 
-    const fileid = item.id;
-    await this.service.deleteItem(fileid).then(data => {
-      this.driveitems = this.driveitems.filter(item => item.id != fileid);
-      this.filtereditems = this.driveitems.filter(item => item.id != fileid).map(item => <ListItem>{ text: item.name, data: item });
+    await this.confirm('Delete file?').then(async dodelete => {
+      if (!dodelete) return;
 
-      if (fileid == this.fileid) this.fileid = this.downloadUrl = undefined;
-      if (fileid == this.folderid) this.folderid = undefined;
+      const fileid = item.id;
+      await this.service.deleteItem(fileid).then(data => {
+        this.driveitems = this.driveitems.filter(item => item.id != fileid);
+        this.filtereditems = this.driveitems.filter(item => item.id != fileid).map(item => <ListItem>{ text: item.name, data: item });
 
-      this.deleted.next(item);
+        if (fileid == this.fileid) this.fileid = this.downloadUrl = undefined;
+        if (fileid == this.folderid) this.folderid = undefined;
+
+        this.deleted.next(item);
+      });
     });
   }
 
@@ -230,13 +234,28 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
     });
   }
 
+  private async overwrite(filename: string): Promise<boolean> {
+    let result = false;
+    const item = this.driveitems.find(item => item.name == filename);
+    if (item) {
+      await this.confirm("Overwrite?").then(overwrite => {
+        result = overwrite
+      });
+    }
+    return result;
+  }
+
   public async createFilePrompt(title: string, defaultfile: string, content: string, conflictBehaivor: ConflictBehavior) {
     if (!this.visible) return;
 
     await this.prompt(title, defaultfile).then(async filename => {
 
       if (filename) {
-        await this.createFile(filename, content, conflictBehaivor, this.folderid);
+        await this.overwrite(filename).then(async overwrite => {
+          if (overwrite) {
+            await this.createFile(filename, content, conflictBehaivor, this.folderid);
+          }
+        })
       }
       this.close.next();
     })
@@ -291,12 +310,6 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
   }
 
 
-  showconfirm = false;
-
-  confirm() {
-    this.showconfirm = true;
-  }
-
   showprompt = false;
   prompttitle!: string;
   promptvalue!: string;
@@ -305,6 +318,7 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
     this.prompttitle = title;
     this.promptvalue = defaultvalue;
     this.showprompt = true;
+    this.showconfirm = false;
 
     return new Promise((resolve, reject) => {
       this.listobject.addEventListener('prompt', (e: any) => {
@@ -319,5 +333,28 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
   protected promptresult(result?: string) {
     this.listobject.dispatchEvent({ type: 'prompt', result });
     this.showprompt = false;
+  }
+
+  showconfirm = false;
+  confirmtitle!: string;
+
+  private confirm(title: string): Promise<boolean> {
+    this.confirmtitle = title;
+    this.showconfirm = true;
+    this.showprompt = false;
+
+    return new Promise((resolve, reject) => {
+      this.listobject.addEventListener('confirm', (e: any) => {
+        if (e)
+          resolve(e.result);
+        else
+          reject(false);
+      })
+    });
+  }
+
+  protected confirmresult(result: boolean) {
+    this.listobject.dispatchEvent({ type: 'confirm', result });
+    this.showconfirm = false
   }
 }

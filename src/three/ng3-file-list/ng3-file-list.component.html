@@ -40,8 +40,12 @@
 
   <flat-ui-prompt *ngIf="showprompt" [title]="prompttitle" [defaultvalue]="promptvalue"
                   [width]="1.5" [selectable]="selectable"
-                  [position]="[width/2, -height-0.4, 0]" [scale]="scale"
+                  [position]="[width/2, -height-0.4, 0]"
                   (result)="promptresult($event)"></flat-ui-prompt>
+
+  <flat-ui-confirm *ngIf="showconfirm" [title]="confirmtitle" [width]="1.5" [selectable]="selectable"
+                   [position]="[width/2, -height-0.4, 0.001]"
+                   (result)="confirmresult($event)"></flat-ui-confirm>
 </ngt-group>
 
 
@@ -51,6 +55,3 @@
               (change)="input.method.text = $event.text;input.showlist=false" (close)="input.showlist=false;input.closeinput()">
 </flat-ui-list>
 
-<!--<flat-ui-confirm *ngIf="showconfirm" [title]="confirmtitle" [width]="1.5" [selectable]="selectable"
-                 [position]="popupposition" [rotation]="popuprotation" [scale]="popupscale"
-                 (result)="log('Confirm result is '+$event);showconfirm=false"></flat-ui-confirm>-->
