@@ -10,7 +10,7 @@
   </flat-ui-select>
 
   <flat-ui-list [position]="[width/2, -height/2-0.15, 0]" [width]="width" [height]="height" [rowcount]="rowcount" [rowsize]="rowheight"
-                [enablehover]="true" [list]="filtereditems" [selectable]="selectable">
+                [enablehover]="true" [list]="filtereditems" [selectable]="selectable" [emptytext]="'Folder is empty'">
 
     <ng-template #listItem let-list="list" let-text="text" let-width="width" let-data="data" let-index="index" let-parent="parent">
       <ngt-group *ngIf="data" [appendTo]="parent">
@@ -28,7 +28,7 @@
               <flat-ui-menu-item [text]="'Rename'" [icon]="'drive_file_rename_outline'" (pressed)="renameItem(data)"></flat-ui-menu-item>
               <flat-ui-menu-item *ngIf="!data.isfolder" [text]="'Duplicate File'" [icon]="'file_copy'" (pressed)="duplicateFile(data)"></flat-ui-menu-item>
               <flat-ui-menu-item [text]="'Delete'" [icon]="'delete'" (pressed)="deleteItem(data)"></flat-ui-menu-item>
-              <flat-ui-menu-item *ngIf="selectfolder && data.isfolder" [text]="'Select'" [icon]="'check'" (pressed)="folderselected.next(data)"></flat-ui-menu-item>
+              <flat-ui-menu-item *ngIf="selectfolder && data.isfolder" [text]="'Select Folder'" [icon]="'check'" (pressed)="folderselected.next(data)"></flat-ui-menu-item>
             </flat-ui-menu-mini>
 
           </ng-template>

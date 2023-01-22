@@ -101,11 +101,9 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
   protected backfolderids: Array<string | undefined> = [];
 
   protected menuitems: Array<MenuItem> = [
-    { text: 'Back', keycode: 'Backspace', icon: 'arrow_back', enabled: false, selected: () => { this.moveback() } },
-    { text: 'Refresh', keycode: 'F5', icon: 'refresh', enabled: true, selected: () => { this.refresh(); } },
-    { text: 'Create Folder', keycode: '', icon: 'create_new_folder', enabled: true, color: new MeshBasicMaterial({ color: 'yellow' }), selected: () => { this.createFolder(); } },
-    //  { text: 'Create File', keycode: 'Ctrl+N', icon: 'note_add', enabled: true, selected: () => { this.createFile(); } },
-    //  { text: 'Update File', keycode: 'Ctrl+S', icon: 'save', enabled: true, selected: () => { this.updateFile(); } },
+    { text: 'Back', keycode: 'Backspace', icon: 'arrow_back', enabled: false, visible: true, selected: () => { this.moveback() } },
+    { text: 'Refresh', keycode: 'F5', icon: 'refresh', enabled: true, visible: true, selected: () => { this.refresh(); } },
+    { text: 'Create Folder', keycode: '', icon: 'create_new_folder', enabled: true, visible: true, color: new MeshBasicMaterial({ color: 'yellow' }), selected: () => { this.createFolder(); } },
   ]
   protected menuwidth = 0;
 
