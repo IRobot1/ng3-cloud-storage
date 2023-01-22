@@ -231,7 +231,7 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
   }
 
   private async overwrite(filename: string): Promise<boolean> {
-    let result = false;
+    let result = true;
     const item = this.driveitems.find(item => item.name == filename);
     if (item) {
       await this.confirm("Overwrite?").then(overwrite => {
@@ -243,9 +243,9 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
 
   public async createFilePrompt(title: string, defaultfile: string, content: string, conflictBehaivor: ConflictBehavior) {
     if (!this.visible) return;
-
+    
     await this.prompt(title, defaultfile).then(async filename => {
-
+      
       if (filename) {
         await this.overwrite(filename).then(async overwrite => {
           if (overwrite) {
