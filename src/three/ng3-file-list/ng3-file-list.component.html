@@ -10,7 +10,7 @@
   </flat-ui-select>
 
   <flat-ui-list [position]="[width/2, -height/2-0.15, 0]" [width]="width" [height]="height" [rowcount]="rowcount" [rowsize]="rowheight"
-                [enablehover]="true" [list]="filtereditems" [selectable]="selectable" (ready)="listobject=$event">
+                [enablehover]="true" [list]="filtereditems" [selectable]="selectable">
 
     <ng-template #listItem let-list="list" let-text="text" let-width="width" let-data="data" let-index="index" let-parent="parent">
       <ngt-group *ngIf="data" [appendTo]="parent">

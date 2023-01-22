@@ -80,7 +80,7 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
   @Input()
   get savefile(): SaveFile { return this._savefile }
   set savefile(newvalue: SaveFile | undefined) {
-    if (!newvalue || !this.listobject) return;
+    if (!newvalue) return;
 
     this._savefile = newvalue;
     this.createFilePrompt(newvalue.prompttitle, newvalue.promptvalue, newvalue.content, newvalue.conflictBehavior);
@@ -93,8 +93,6 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
   @Output() renamed = new EventEmitter<FileData>();
   @Output() saved = new EventEmitter<FileData>();
   @Output() close = new EventEmitter<void>();
-
-  protected listobject!: Object3D;
 
   protected rowheight = 0.2;
   protected rowcount = 4;
@@ -309,6 +307,7 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
     }
   }
 
+  private popup = new Object3D
 
   showprompt = false;
   prompttitle!: string;
@@ -321,7 +320,7 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
     this.showconfirm = false;
 
     return new Promise((resolve, reject) => {
-      this.listobject.addEventListener('prompt', (e: any) => {
+      this.popup.addEventListener('prompt', (e: any) => {
         if (e)
           resolve(e.result);
         else
@@ -331,7 +330,7 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
   }
 
   protected promptresult(result?: string) {
-    this.listobject.dispatchEvent({ type: 'prompt', result });
+    this.popup.dispatchEvent({ type: 'prompt', result });
     this.showprompt = false;
   }
 
@@ -344,7 +343,7 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
     this.showprompt = false;
 
     return new Promise((resolve, reject) => {
-      this.listobject.addEventListener('confirm', (e: any) => {
+      this.popup.addEventListener('confirm', (e: any) => {
         if (e)
           resolve(e.result);
         else
@@ -354,7 +353,7 @@ export class Ng3FileListComponent extends NgtObjectProps<Group> {
   }
 
   protected confirmresult(result: boolean) {
-    this.listobject.dispatchEvent({ type: 'confirm', result });
+    this.popup.dispatchEvent({ type: 'confirm', result });
     this.showconfirm = false
   }
 }
