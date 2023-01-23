@@ -12,7 +12,7 @@
     "sourceMap": true,
     "paths": {
       "ngx-cloud-storage-onedrive": [
-        "dist/ngx-cloud-storage-onedrive"
+        "projects/ngx-cloud-storage-onedrive/src/public-api"
       ]
     },
     "declaration": false,

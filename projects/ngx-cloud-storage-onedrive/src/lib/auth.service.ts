@@ -35,9 +35,9 @@ export class AuthService {
     if (this.authenticated) {
       this.msalService.instance.setActiveAccount(accounts[0]);
     }
-    //this.getUser().then((user) => {
-    //  this.user = user;
-    //});
+    this.getUser().then((user) => {
+      this.user = user;
+    });
   }
 
   // Prompt the user to sign in and
@@ -51,7 +51,7 @@ export class AuthService {
       if (result) {
         this.msalService.instance.setActiveAccount(result.account);
         this.authenticated = true;
-        this.user = await this.getUser(settings.scopes);
+        this.user = await this.getUser();
       }
     } catch (reason: any) {
       console.error(
@@ -73,7 +73,7 @@ export class AuthService {
     return this.msalService.handleRedirectObservable();
   }
 
-  private async getUser(scopes: Array<string>): Promise<User | undefined> {
+  private async getUser(): Promise<User | undefined> {
     if (!this.authenticated) return undefined;
 
     // Create an authentication provider for the current user
@@ -81,7 +81,7 @@ export class AuthService {
       this.msalService.instance as PublicClientApplication,
       {
         account: this.msalService.instance.getActiveAccount()!,
-        scopes: scopes,
+        scopes: ['user.read', 'Files.Read', 'Files.ReadWrite'],
         interactionType: InteractionType.Popup,
       }
     );
