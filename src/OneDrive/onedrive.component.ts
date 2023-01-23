@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { AuthenticationResult } from '@azure/msal-browser';
-
-import { AuthService, User } from './auth.service';
-import { OneDriveService } from './onedrive.service';
+import { User } from '@microsoft/microsoft-graph-types';
+import { AuthService, OneDriveService } from 'ngx-cloud-storage-onedrive';
+import { OAuthSettings } from './oauth';
 
 @Component({
   selector: 'app-onedrive',
@@ -39,7 +39,7 @@ export class OneDriveComponent {
   }
 
   async signIn(): Promise<void> {
-    await this.authService.signIn();
+    await this.authService.signIn(OAuthSettings);
   }
 
   signOut(): void {

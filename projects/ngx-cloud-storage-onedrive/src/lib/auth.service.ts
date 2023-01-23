@@ -9,8 +9,8 @@ import { Client } from '@microsoft/microsoft-graph-client';
 import { AuthCodeMSALBrowserAuthenticationProvider } from '@microsoft/microsoft-graph-client/authProviders/authCodeMsalBrowser';
 import * as MicrosoftGraph from '@microsoft/microsoft-graph-types';
 
-import { OAuthSettings } from './oauth';
 import { lastValueFrom, Observable } from 'rxjs';
+import { OAuthSettings } from './oauth';
 
 export class User {
   displayName!: string;
@@ -35,23 +35,23 @@ export class AuthService {
     if (this.authenticated) {
       this.msalService.instance.setActiveAccount(accounts[0]);
     }
-    this.getUser().then((user) => {
-      this.user = user;
-    });
+    //this.getUser().then((user) => {
+    //  this.user = user;
+    //});
   }
 
   // Prompt the user to sign in and
   // grant consent to the requested permission scopes
-  async signIn(): Promise<void> {
+  async signIn(settings: OAuthSettings): Promise<void> {
     try {
       const result = await lastValueFrom(
-        this.msalService.loginPopup(OAuthSettings)
+        this.msalService.loginPopup(settings)
       );
 
       if (result) {
         this.msalService.instance.setActiveAccount(result.account);
         this.authenticated = true;
-        this.user = await this.getUser();
+        this.user = await this.getUser(settings.scopes);
       }
     } catch (reason: any) {
       console.error(
@@ -73,7 +73,7 @@ export class AuthService {
     return this.msalService.handleRedirectObservable();
   }
 
-  private async getUser(): Promise<User | undefined> {
+  private async getUser(scopes: Array<string>): Promise<User | undefined> {
     if (!this.authenticated) return undefined;
 
     // Create an authentication provider for the current user
@@ -81,7 +81,7 @@ export class AuthService {
       this.msalService.instance as PublicClientApplication,
       {
         account: this.msalService.instance.getActiveAccount()!,
-        scopes: OAuthSettings.scopes,
+        scopes: scopes,
         interactionType: InteractionType.Popup,
       }
     );

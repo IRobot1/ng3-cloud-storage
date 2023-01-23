@@ -21,7 +21,6 @@ import { AppComponent } from './app.component';
 import { HomeComponent } from '../home/home.component';
 import { OneDriveComponent } from '../OneDrive/onedrive.component';
 
-import { OAuthSettings } from '../OneDrive/oauth';
 import { WebFileListComponent } from '../web-file-list/web-file-list.component';
 import { Ng3FileListComponent } from '../three/ng3-file-list/ng3-file-list.component';
 
@@ -36,6 +35,7 @@ import { Ng3FlatUiModule } from 'ng3-flat-ui';
 import { NgtGroupModule } from '@angular-three/core/group';
 import { NgtSobaOrbitControlsModule } from '@angular-three/soba/controls'
 import { Ng3WebxrModule } from 'ng3-webxr';
+import { OAuthSettings } from '../OneDrive/oauth';
 
 
 let msalInstance: IPublicClientApplication | undefined = undefined;
