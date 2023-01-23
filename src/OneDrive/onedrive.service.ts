@@ -3,7 +3,7 @@ import * as MicrosoftGraph from '@microsoft/microsoft-graph-types';
 
 import { AuthService } from './auth.service';
 
-import { ConflictBehavior, FileData, Ng3FileList } from './file-list';
+import { ConflictBehavior, FileData, Ng3FileList } from 'ngx-cloud-storage-types';
 
 @Injectable()
 export class OneDriveService implements Ng3FileList {

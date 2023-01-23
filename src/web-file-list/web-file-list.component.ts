@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 
-import { FileData, FilterData, Ng3FileList } from '../OneDrive/file-list';
+import { FileData, FilterData, Ng3FileList } from 'ngx-cloud-storage-types';
 
 @Component({
   selector: 'web-file-list[service]',

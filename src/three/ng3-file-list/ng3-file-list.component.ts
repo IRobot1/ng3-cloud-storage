@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, In
 
 import { Group, MeshBasicMaterial, Object3D } from 'three';
 
-import { ConflictBehavior, FileData, FilterData, Ng3FileList } from '../../OneDrive/file-list';
+import { ConflictBehavior, FileData, FilterData, Ng3FileList } from 'ngx-cloud-storage-types';
 import { FlatUIInputService, InteractiveObjects, ListItem, MenuItem } from 'ng3-flat-ui';
 import { NgtObjectProps } from '@angular-three/core';
 

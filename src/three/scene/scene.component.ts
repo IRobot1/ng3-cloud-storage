@@ -1,15 +1,16 @@
 import { Component, ViewChild } from "@angular/core";
+import { CookieService } from 'ngx-cookie-service';
+
+import { BufferGeometry, Object3D } from "three";
+import { PLYLoader, PLYExporter } from 'three-stdlib';
+import { NgtLoader } from "@angular-three/core";
+
 import { InteractiveObjects, MenuItem } from "ng3-flat-ui";
+import { FileData, FilterData } from "ngx-cloud-storage-types";
 
 import { FileSelected, Ng3FileListComponent, SaveFile } from "../ng3-file-list/ng3-file-list.component";
 import { OneDriveService } from "../../OneDrive/onedrive.service";
-import { FileData, FilterData } from "../../OneDrive/file-list";
 
-import { PLYLoader, PLYExporter } from 'three-stdlib';
-import { NgtLoader } from "@angular-three/core";
-import { BufferGeometry, Object3D } from "three";
-
-import { CookieService } from 'ngx-cookie-service';
 
 @Component({
   selector: 'three-scene',
