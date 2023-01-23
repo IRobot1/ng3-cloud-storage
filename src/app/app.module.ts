@@ -22,7 +22,6 @@ import { HomeComponent } from '../home/home.component';
 import { OneDriveComponent } from '../OneDrive/onedrive.component';
 
 import { WebFileListComponent } from '../web-file-list/web-file-list.component';
-import { Ng3FileListComponent } from '../three/ng3-file-list/ng3-file-list.component';
 
 import { NgtCanvasModule } from '@angular-three/core';
 import { NgtColorAttributeModule } from '@angular-three/core/attributes';
@@ -36,6 +35,7 @@ import { NgtGroupModule } from '@angular-three/core/group';
 import { NgtSobaOrbitControlsModule } from '@angular-three/soba/controls'
 import { Ng3WebxrModule } from 'ng3-webxr';
 import { OAuthSettings } from '../OneDrive/oauth';
+import { Ng3FileListModule } from 'ng3-file-list';
 
 
 let msalInstance: IPublicClientApplication | undefined = undefined;
@@ -65,7 +65,6 @@ export function MSALInstanceFactory(): IPublicClientApplication {
     WebFileListComponent,
 
     ThreeSceneComponent,
-    Ng3FileListComponent,
   ],
   imports: [
     BrowserModule,
@@ -95,6 +94,7 @@ export function MSALInstanceFactory(): IPublicClientApplication {
 
     Ng3FlatUiModule,
     Ng3WebxrModule,
+    Ng3FileListModule,
   ],
   providers: [
     {

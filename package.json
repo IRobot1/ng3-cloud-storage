@@ -6,7 +6,6 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-
     "buildonedrive": "ng build ngx-cloud-storage-onedrive",
     "publishonedrive": "ng build ngx-cloud-storage-onedrive --configuration production && cd dist/ngx-cloud-storage-onedrive && npm publish"
   },
@@ -29,6 +28,7 @@
     "@azure/msal-browser": "^2.32.1",
     "@microsoft/microsoft-graph-client": "^3.0.4",
     "moment": "^2.29.4",
+    "ng3-file-list": "^0.0.1",
     "ng3-flat-ui": "^0.0.22",
     "ng3-webxr": "^0.0.14",
     "ngx-cloud-storage-types": "^0.0.1",

@@ -7,9 +7,9 @@ import { NgtLoader } from "@angular-three/core";
 
 import { InteractiveObjects, MenuItem } from "ng3-flat-ui";
 import { FileData, FilterData } from "ngx-cloud-storage-types";
+import { FileSelected, Ng3FileListComponent, SaveFile } from "ng3-file-list";
 import { OneDriveService } from "ngx-cloud-storage-onedrive";
 
-import { FileSelected, Ng3FileListComponent, SaveFile } from "../ng3-file-list/ng3-file-list.component";
 
 
 @Component({
