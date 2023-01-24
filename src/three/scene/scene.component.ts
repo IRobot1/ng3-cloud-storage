@@ -1,7 +1,7 @@
-import { Component, ViewChild } from "@angular/core";
+import { ChangeDetectorRef, Component, ViewChild } from "@angular/core";
 import { CookieService } from 'ngx-cookie-service';
 
-import { BufferGeometry, Object3D } from "three";
+import { Box3, BufferGeometry, Group, Object3D, Scene, Vector3 } from "three";
 import { PLYLoader, PLYExporter } from 'three-stdlib';
 import { NgtLoader } from "@angular-three/core";
 
@@ -40,6 +40,7 @@ export class ThreeSceneComponent {
     { name: 'Select Folder', filter: 'folder' },
   ]
   modelsfilter = [
+    { name: 'Models', filter: 'glb' },
     { name: 'Models', filter: 'ply' },
   ]
 
@@ -61,6 +62,7 @@ export class ThreeSceneComponent {
     public onedrive: OneDriveService,
     private loader: NgtLoader,
     private cookie: CookieService,
+    private cd: ChangeDetectorRef
   ) {
     this.projectroot = this.cookie.get('projectroot');
   }
@@ -71,10 +73,8 @@ export class ThreeSceneComponent {
     this.selectfolder = false;
   }
 
-  open(file: FileSelected) {
-    this.browse = false;
-
-    const s = this.loader.use(PLYLoader, file.downloadUrl).subscribe(next => {
+  private loadPLY(downloadUrl: string) {
+    const s = this.loader.use(PLYLoader, downloadUrl).subscribe(next => {
       next.center();
       if (next.boundingBox)
         this.meshheight = (next.boundingBox.max.y - next.boundingBox.min.y) / 2;
@@ -85,6 +85,35 @@ export class ThreeSceneComponent {
       () => { },
       () => { s.unsubscribe(); }
     );
+  }
+
+  scene!: Group;
+
+  loaded(scene: Scene) {
+    const box = new Box3().setFromObject(scene)
+    const size = new Vector3()
+    box.getSize(size);
+    this.scene.scale.setScalar(1 / size.length());
+    this.meshheight = 0.25;
+    this.cd.detectChanges();
+  }
+
+  showmodel = false
+  url!: string;
+
+  open(file: FileSelected) {
+    this.browse = false;
+    switch (file.item.extension) {
+      case 'ply':
+        this.loadPLY(file.downloadUrl);
+        this.showmodel = true
+        break;
+      case 'gltf':
+      case 'glb':
+        this.showmodel = false;
+        this.url = file.downloadUrl;
+        break;
+    }
 
     this.filename = file.item.name;
   }

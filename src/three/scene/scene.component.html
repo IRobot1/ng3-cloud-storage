@@ -9,11 +9,14 @@
       <ngt-mesh-basic-material color="gray"></ngt-mesh-basic-material>
     </ngt-mesh>
 
-    <ngt-mesh #model [position]="[-1, meshheight+0.001, z]" [geometry]="geometry">
+    <ngt-mesh #model [visible]="showmodel" [position]="[-1, meshheight+0.001, z]" [geometry]="geometry">
       <ngt-box-geometry [args]="[0.1, 0.1, 0.1]"></ngt-box-geometry>
       <ngt-mesh-basic-material color="red"></ngt-mesh-basic-material>
     </ngt-mesh>
 
+    <ngt-group #gltf [position]="[-1, meshheight+0.001, z]"  (ready)="scene=gltf.instance.value">
+      <gltf-model [animate]="false" [url]="url" (loaded)="loaded($event)"></gltf-model>
+    </ngt-group>
 
     <flat-ui-menu-mini [position]="[-1, -0.5, z+0.5]" [selectable]="selectable">
       <flat-ui-menu-item [enabled]="!browse" [text]="'Project Folder'" [icon]="'home_work'" (pressed)="changeproject()"></flat-ui-menu-item>

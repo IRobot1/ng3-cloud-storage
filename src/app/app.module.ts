@@ -36,6 +36,8 @@ import { NgtSobaOrbitControlsModule } from '@angular-three/soba/controls'
 import { Ng3WebxrModule } from 'ng3-webxr';
 import { OAuthSettings } from '../OneDrive/oauth';
 import { Ng3FileListModule } from 'ng3-file-list';
+import { GLTFodelComponent } from '../gltf-model/gltf-model.component';
+import { NgtPrimitiveModule } from '@angular-three/core/primitive';
 
 
 let msalInstance: IPublicClientApplication | undefined = undefined;
@@ -65,6 +67,7 @@ export function MSALInstanceFactory(): IPublicClientApplication {
     WebFileListComponent,
 
     ThreeSceneComponent,
+    GLTFodelComponent,
   ],
   imports: [
     BrowserModule,
@@ -89,6 +92,7 @@ export function MSALInstanceFactory(): IPublicClientApplication {
     NgtBoxGeometryModule,
     NgtCylinderGeometryModule,
     NgtMeshBasicMaterialModule,
+    NgtPrimitiveModule,
 
     NgtSobaOrbitControlsModule,
 
